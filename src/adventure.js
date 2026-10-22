@@ -1,4 +1,4 @@
-import { WORLD, WIDTH, HEIGHT, ROOM_COUNT, ENEMY_TYPES, doorPosition, opposite, doorKey, choicesFor } from './world.js?v=3';
+import { WORLD, WIDTH, HEIGHT, ROOM_COUNT, ENEMY_TYPES, doorPosition, opposite, doorKey, choicesFor, activateWorld, DEFAULT_SEED } from './world.js?v=4';
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const distance = (a, b) => Math.hypot(a.x-b.x, a.y-b.y);
@@ -6,9 +6,11 @@ const unit = (x,y) => { const n=Math.hypot(x,y)||1; return {x:x/n,y:y/n}; };
 const freshRecord = () => ({ visited:false, cleared:false, claimed:[], destroyed:[], rewardChosen:false });
 export const SAVE_KEY = 'sunlit-ruins-v3';
 
-export function createRun(seed = 104729) {
+export function createRun(seed = DEFAULT_SEED) {
+  const s = Number.isFinite(seed) ? seed >>> 0 : DEFAULT_SEED;
+  activateWorld(s);
   const run = {
-    version:3, seed:seed >>> 0, room:0, time:0, status:'playing', kills:0, damageTaken:0, deaths:0,
+    version:3, seed:s, room:0, time:0, status:'playing', kills:0, damageTaken:0, deaths:0,
     hero:{x:360,y:328,r:12,hp:120,maxHp:120,attack:10,armor:1,coins:0,yellow:0,blue:0,potions:2,
       invuln:0,shootCd:0,dashCd:0,dashTime:0,dashX:0,dashY:1,facingX:0,facingY:-1},
     records:Array.from({length:ROOM_COUNT},freshRecord), opened:[], relics:{twin:0,swift:0,sun:0,pierce:0,rapid:0,armor:0},
@@ -41,11 +43,17 @@ function safePoint(scene,x,y,r=14) {
   return {x:360,y:216};
 }
 
+export function enemyStats(type,floor) {
+  const def=ENEMY_TYPES[type];
+  return {
+    hp:type==='guardian' ? 160+floor*65 : Math.round(def.hp*(1+floor*.24)),
+    attack:Math.round(def.attack*(1+floor*.18)),
+  };
+}
 function makeEnemy(run,def,i=0) {
-  const stats=ENEMY_TYPES[def.type],floor=WORLD[run.room].floor;
+  const stats=ENEMY_TYPES[def.type],floor=WORLD[run.room].floor,scaled=enemyStats(def.type,floor);
   const position=safePoint(run.scene,def.x,def.y,stats.radius);
-  const hp=def.type==='guardian' ? 150+floor*60 : Math.round(stats.hp*(1+floor*.22));
-  return {...position,id:def.id,type:def.type,r:stats.radius,hp,maxHp:hp,attack:stats.attack+floor*1.8,
+  return {...position,id:def.id,type:def.type,r:stats.radius,hp:scaled.hp,maxHp:scaled.hp,attack:scaled.attack,
     cooldown:.8+i*.27,phase:'idle',phaseTime:0,cycle:0,targetX:0,targetY:0,vx:0,vy:0,flash:0};
 }
 
@@ -59,7 +67,7 @@ function addClearPickups(run) {
   if(room.kind===1) {
     addPickup(run,'yellow','yellow',326,216);addPickup(run,'blue','blue',394,216);addPickup(run,'clear-coins','coin',360,255,3);
   } else if(room.kind===3) {
-    addPickup(run,'gem',['attack','armor','vitality'][room.floor%3],360,216,1);
+    addPickup(run,'gem',room.gem||['attack','armor','vitality'][room.floor%3],360,216,1);
     addPickup(run,'potion','potion',410,216,1);
     addPickup(run,'clear-coins','coin',310,216,4);
   } else if(room.kind===4) addPickup(run,'clear-coins','coin',360,216,6);
@@ -161,7 +169,8 @@ function burst(run,x,y,color,count=9) {
 }
 function hurtHero(run,amount,from) {
   const h=run.hero;if(h.invuln>0 || h.dashTime>0 || run.status!=='playing')return false;
-  const damage=Math.max(1,Math.round(amount-h.armor));h.hp=Math.max(0,h.hp-damage);h.invuln=.85;
+  const reduction=h.armor*4/(h.armor*4+40);
+  const damage=Math.max(1,Math.round(amount*(1-reduction)));h.hp=Math.max(0,h.hp-damage);h.invuln=.85;
   run.damageTaken+=damage;run.scene.texts.push({x:h.x,y:h.y-35,text:`−${damage}`,life:.8,color:'#c27955'});
   if(from){const away=unit(h.x-from.x,h.y-from.y);moveActor(run.scene,h,away.x*15,away.y*15);}
   burst(run,h.x,h.y,'#efbd7e',7);emit(run,'hit');
@@ -315,7 +324,7 @@ export function update(run,input={},seconds=1/60) {
   for(const e of scene.enemies){if(run.status!=='playing')break;updateEnemy(run,e,dt);}
   if(run.status==='playing')updateBullets(run,dt);
   if(run.status==='playing') {
-    for(const o of scene.obstacles)if(o.type==='spikes' && (run.time+o.x*.003)%2.8<.9 && overlaps(h.x,h.y,h.r-3,o))hurtHero(run,12+WORLD[run.room].floor,o);
+    for(const o of scene.obstacles)if(o.type==='spikes' && (run.time+o.x*.003)%2.8<.9 && overlaps(h.x,h.y,h.r-3,o))hurtHero(run,13+WORLD[run.room].floor*1.6,o);
     if(run.status==='playing' && !scene.enemies.length && !roomCleared(run))clearRoom(run);
   }
   if(run.status==='playing')for(const p of scene.pickups){p.age+=dt;if(distance(h,p)<h.r+13)collect(run,p);}
@@ -342,7 +351,7 @@ export function readRun(storage) {
   try{
     const data=JSON.parse(storage.getItem(SAVE_KEY));
     if(data?.version!==3 || !Number.isInteger(data.room) || data.room<0 || data.room>=ROOM_COUNT || !Array.isArray(data.records) || data.records.length!==ROOM_COUNT)return null;
-    const run=createRun(Number(data.seed)||104729);
+    const run=createRun(Number(data.seed)||DEFAULT_SEED);
     const bounds={hp:[0,1000],maxHp:[120,1000],attack:[10,200],armor:[1,40],coins:[0,9999],yellow:[0,12],blue:[0,12],potions:[0,99]};
     for(const [key,[lo,hi]] of Object.entries(bounds))if(Number.isFinite(data.hero?.[key]))run.hero[key]=clamp(Math.floor(data.hero[key]),lo,hi);
     run.hero.hp=Math.min(run.hero.hp,run.hero.maxHp);

@@ -1,12 +1,16 @@
-import {createRun, readRun, saveRun, update, takeEvents, shopItems, buy, chooseRelic, revive, roomCleared} from './adventure.js?v=3';
-import {WORLD, ZONES, RELICS, ENEMY_TYPES, choicesFor, doorKey, WIDTH, HEIGHT} from './world.js?v=3';
-import {loadArt, render} from './scene.js?v=3';
+import {createRun, readRun, saveRun, update, takeEvents, shopItems, buy, chooseRelic, revive, roomCleared} from './adventure.js?v=4';
+import {WORLD, ZONES, RELICS, ENEMY_TYPES, choicesFor, doorKey, WIDTH, HEIGHT} from './world.js?v=4';
+import {loadArt, render} from './scene.js?v=4';
 
 const $ = id => document.getElementById(id);
 let storage;
 try { storage = localStorage; } catch { storage = null; }
 const restored = storage && readRun(storage);
-let run = restored || createRun(), started = false, images = {}, aim = null;
+const newSeed = () => {
+  try { const buf=new Uint32Array(1); crypto.getRandomValues(buf); return buf[0]>>>0; }
+  catch { return Math.floor(Math.random()*4294967296)>>>0; }
+};
+let run = restored || createRun(newSeed()), started = false, images = {}, aim = null;
 let lastFrame = 0, lastHud = 0, shopSignature = '', mapSignature = '', rewardFloor = null;
 let toastTimer, storageWarning = false, soundOn = false, audio, lastShotSound = 0;
 const held = new Map(), touchHeld = new Set();
@@ -139,12 +143,12 @@ function syncHud() {
   $('dash-button').disabled=!started||run.status!=='playing'||h.dashCd>0;
   $('interact-button').disabled=!started||run.status!=='playing';
   const boss=run.scene.enemies.find(e=>e.type==='guardian'); $('boss-bar').hidden=!boss;
-  if(boss){$('boss-name').textContent=`${zone.name} · 守卫`; $('boss-health').style.width=`boss.hp/boss.maxHp*100}%`;}
+  if(boss){$('boss-name').textContent=`${zone.name} · 守卫`; $('boss-health').style.width=`${boss.hp/boss.maxHp*100}%`;}
   $('stage-hint').textContent=roomCleared(run)?room.kind===4?'走到花环旁，按 E 前进':'拾取收获 · 靠近花门按 E': '自动瞄准射击 · 保持移动，留意金色蓄力圈';
   $('stage-hint').hidden=!started||run.status!=='playing';
   $('pause-panel').hidden=!started||run.status!=='paused'||modalOpen(); $('death-panel').hidden=!started||run.status!=='dead'; $('win-panel').hidden=!started||run.status!=='won';
   $('pause-button').textContent=run.status==='paused'?'▶ 继续':'Ⅱ 暂停'; $('pause-button').disabled=!started||!['playing','paused'].includes(run.status)||modalOpen();
-  if(run.status==='won')$('win-summary').textContent=`走过六层花园，清空 ${cleared} / 30 间房，击败 ${run.kills} 位小怪。旅途用时 ${Math.floor(run.time/60)} 分 ${Math.floor(run.time%60)} 秒。`;
+  if(run.status==='won')$('win-summary').textContent=`走过六层花园，清空 ${cleared} / 30 间房，击败 ${run.kills} 位小怪。旅途用时 ${Math.floor(run.time/60)} 分 ${Math.floor(run.time%60)} 秒。旅程印记 #${run.seed}。`;
   $('threat-title').textContent=room.kind===2?'花一点金币，让下一程轻松些。':room.kind===4?'等蓄力亮起，再从弹道空隙穿过。':'先看一眼，再往前。';
   const types=[...new Set(room.enemies.map(e=>e.type))];
   $('threat-detail').textContent=room.kind===2?'攻击提升清房速度，护甲抵挡伤害；晴露可以留到战斗中使用。':types.map(type=>ENEMY_TYPES[type].description).join('；')+'。';
@@ -175,7 +179,7 @@ $('help-button').addEventListener('click',()=>showDialog('help-dialog'));
 for(const button of document.querySelectorAll('[data-close]'))button.addEventListener('click',()=>$(button.dataset.close).close());
 for(const id of ['new-run-button','win-new-button'])$(id).addEventListener('click',()=>showDialog('restart-dialog'));
 $('confirm-restart').addEventListener('click',()=>{
-  run=createRun();rewardFloor=null;mapSignature='';shopSignature='';$('restart-dialog').dataset.resume='false';$('restart-dialog').close();clearInput();start();
+  run=createRun(newSeed());rewardFloor=null;mapSignature='';shopSignature='';$('restart-dialog').dataset.resume='false';$('restart-dialog').close();clearInput();start();
 });
 $('reward-dialog').addEventListener('cancel',event=>event.preventDefault());
 $('reward-choices').addEventListener('click',event=>{const button=event.target.closest('[data-relic]');if(button&&chooseRelic(run,button.dataset.relic)){$('reward-dialog').close();processEvents();syncHud();focusGame();}});

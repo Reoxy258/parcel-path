@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WORLD, ROOM_COUNT, choicesFor, doorPosition } from '../src/world.js';
+import { WORLD, ROOM_COUNT, choicesFor, doorPosition } from '../src/world.js?v=4';
 import {
   SAVE_KEY, createRun, enterRoom, blocked, moveActor, transition, interact,
   update, roomCleared, chooseRelic, shopItems, buy, revive, usePotion,
   saveRun, readRun,
-} from '../src/adventure.js';
+} from '../src/adventure.js?v=4';
 
 const memoryStorage = () => {
   const values = new Map();
@@ -189,7 +189,7 @@ test('contact respects armor and invulnerability; death and revival preserve dur
   contact.scene.enemies = [contact.scene.enemies[0]];
   Object.assign(contact.scene.enemies[0], { x: contact.hero.x, y: contact.hero.y });
   update(contact, {}, .05);
-  assert.equal(contact.hero.hp, 113, 'fly attack 8 minus starting armor 1');
+  assert.equal(contact.hero.hp, 113, 'fly attack 8 on starting armor 1 reduces to 7 damage');
   update(contact, {}, .05); assert.equal(contact.hero.hp, 113, 'same contact cannot immediately hit again');
 
   const run = createRun();
@@ -287,15 +287,19 @@ test('clearing the final enemy removes hostile bullets before post-combat lootin
 });
 
 test('a lethal spike on the last-enemy frame cannot be overwritten by guardian rewards', () => {
-  const run = createRun(); enterRoom(run, 14);
-  Object.assign(run.hero, { x: 264, y: 120, hp: 1, invuln: 0 });
-  run.time = 2.2;
+  // 布局随机后，守卫房是否带荆棘由种子决定；挑选当前世界第一个有荆棘的守卫房。
+  const spikeRoom = WORLD.find((room) => room.kind === 4 && room.obstacles.some((obstacle) => obstacle.type === 'spikes'));
+  assert.ok(spikeRoom, 'the default world keeps spikes in at least one guard room');
+  const run = createRun(); enterRoom(run, spikeRoom.id);
+  const spike = run.scene.obstacles.find((obstacle) => obstacle.type === 'spikes');
+  Object.assign(run.hero, { x: spike.x + 20, y: spike.y + 20, hp: 1, invuln: 0 });
+  run.time = 2.8 - (spike.x * .003 % 2.8) + .45; // 落在荆棘的伤害窗口内
   run.scene.enemies = [];
   update(run, {}, 1 / 60);
   assert.equal(run.status, 'dead');
   assert.equal(run.hero.hp, 0);
   assert.equal(run.pendingReward, null);
-  assert.equal(run.records[14].cleared, false);
+  assert.equal(run.records[spikeRoom.id].cleared, false);
 });
 
 test('missing, corrupt, obsolete and out-of-range saves fail safely', () => {

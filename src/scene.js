@@ -1,4 +1,4 @@
-import { WIDTH, HEIGHT, WORLD, ZONES, ENEMY_TYPES, doorPosition, doorKey } from './world.js?v=3';
+import { WIDTH, HEIGHT, WORLD, ZONES, ENEMY_TYPES, doorPosition, doorKey } from './world.js?v=4';
 
 const round = (ctx,x,y,w,h,r=6) => {ctx.beginPath();ctx.roundRect(x,y,w,h,r);};
 function label(ctx,text,x,y,size=12,color='#68795c',align='center') {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f7f5ec">
-  <meta name="description" content="晴空遗迹：明亮的花园房间冒险。移动射击、冲刺躲避、收集钥匙、购买强化，走过六层30个房间，抵达花塔终点。">
+  <meta name="description" content="晴空遗迹：明亮的花园房间冒险。移动射击、冲刺躲避、收集钥匙、购买强化，走过六层30个房间，抵达花塔终点。每条旅程随机生成地形与敌群。">
   <title>晴空遗迹 · Sunlit Ruins</title>
   <link rel="icon" href="./assets/sunlit.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./src/adventure.css?v=3">
@@ -41,7 +41,7 @@
               <canvas id="game" width="1440" height="864" tabindex="0" role="img" aria-label="花园冒险画面：WASD或方向键移动，自动射击，空格冲刺，E交互，Q喝药。" aria-describedby="control-guide">你的浏览器需要支持 Canvas 才能显示这个游戏。</canvas>
               <div id="boss-bar" class="boss-bar" hidden><span id="boss-name">花园守卫</span><div><i id="boss-health"></i></div></div>
               <div id="stage-hint" class="stage-hint">靠近小怪会自动发射飞信</div>
-              <div id="start-panel" class="stage-overlay"><div class="overlay-card"><span class="overlay-flower">✳</span><p class="eyebrow">A SUNNY LITTLE ADVENTURE</p><h2 id="start-title">花门后面，有点热闹。</h2><p id="start-note">移动、躲避，飞信会自动瞄准。<br>收集钥匙与金币，挑战每层守卫。</p><button id="start-button" class="primary-button">带上勇气，出发 →</button><small>WASD 移动 · 空格冲刺 · E 交互 · Q 喝药</small></div></div>
+              <div id="start-panel" class="stage-overlay"><div class="overlay-card"><span class="overlay-flower">✳</span><p class="eyebrow">A SUNNY LITTLE ADVENTURE</p><h2 id="start-title">花门后面，有点热闹。</h2><p id="start-note">移动、躲避，飞信会自动瞄准。<br>每条旅程的地形与敌群都会重新绽放，收集钥匙与金币，挑战每层守卫。</p><button id="start-button" class="primary-button">带上勇气，出发 →</button><small>WASD 移动 · 空格冲刺 · E 交互 · Q 喝药</small></div></div>
               <div id="pause-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">❧</span><h2>歇一小会儿。</h2><p>花园会等你，敌人也会。</p><button id="resume-button" class="primary-button">继续冒险 →</button></div></div>
               <div id="death-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">♧</span><h2>先回前庭，喘口气。</h2><p>已完成的房间、钥匙和强化保留。<br>体力恢复，金币减少 20%。</p><button id="revive-button" class="primary-button">整理口袋，再出发 →</button></div></div>
               <div id="win-panel" class="stage-overlay" hidden><div class="overlay-card"><span class="overlay-flower">☀</span><p class="eyebrow">YOU BROUGHT THE SUNSHINE BACK</p><h2>晴天，找回来了。</h2><p id="win-summary">六枚晴空印记，让花塔重新亮起。</p><button id="win-new-button" class="primary-button">再走一条新旅程 →</button></div></div>
@@ -61,11 +61,11 @@
     <footer class="footer"><span>一点勇气，一口袋晴天。<button id="new-run-button">重新开始</button></span><span>SUNLIT RUINS <i>✳</i> A LITTLE ROOM TO GROW</span></footer>
   </div>
 
-  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站用金币提升攻击、护甲或购买晴露。门只在首次开启时扣钥匙。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
+  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站用金币提升攻击、护甲或购买晴露。门只在首次开启时扣钥匙。护甲越高减伤越多，但收益会递减——攻击与体力同样值得投资。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间，每条旅程的房间地形、敌群与晶石都会按旅程印记随机生成。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
   <dialog id="reward-dialog" class="dialog reward-dialog"><p class="eyebrow">A LITTLE GIFT FOR YOUR COURAGE</p><span class="reward-flower">✳</span><h2>挑一份小巧思，陪你走下去。</h2><p>三选一，能力会在这次旅程里一直保留。</p><div id="reward-choices" class="reward-choices"></div></dialog>
-  <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE JOURNEY</p><h2>要从第一层重新出发吗？</h2><p>这会替换当前旅程的房间进度和强化。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前旅程</button><button id="confirm-restart" class="primary-button">重新出发 →</button></div></dialog>
+  <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE JOURNEY</p><h2>要从第一层重新出发吗？</h2><p>重新出发会开启一条全新旅程：房间布局重新随机，进度和强化从头开始。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前旅程</button><button id="confirm-restart" class="primary-button">重新出发 →</button></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p>请启用 JavaScript 以运行这个小游戏。</p></noscript>
-  <script type="module" src="./src/adventure-ui.js?v=3"></script>
+  <script type="module" src="./src/adventure-ui.js?v=4"></script>
 </body>
 </html>
