@@ -1,6 +1,6 @@
-import { parseLevel, cloneState, step, solve, isWon, isDelivered, isBlocked, COLOR_NAMES, walkPath, neighbor, starsFor } from './engine.js';
-import { LEVEL_DEFINITIONS, CHAPTERS } from './levels.js';
-import { readProgress, saveProgress, isLevelUnlocked } from './storage.js';
+import { parseLevel, cloneState, step, solve, isWon, isDelivered, isBlocked, COLOR_NAMES, walkPath, neighbor, starsFor } from './engine.js?v=2';
+import { LEVEL_DEFINITIONS, CHAPTERS } from './levels.js?v=2';
+import { readProgress, saveProgress, isLevelUnlocked } from './storage.js?v=2';
 
 const $ = (id) => document.getElementById(id);
 const board = $('board');
@@ -245,7 +245,7 @@ function showHint() {
   };
   try {
     if (!window.Worker) { fallback(); return; }
-    worker = new Worker(new URL('./solver.worker.js', import.meta.url), { type: 'module' });
+    worker = new Worker(new URL('./solver.worker.js?v=2', import.meta.url), { type: 'module' });
     worker.onmessage = ({ data }) => { if (data.id === version) accept(data); };
     worker.onerror = (event) => { event.preventDefault(); fallback(); };
     worker.postMessage({ id: version, definition: LEVEL_DEFINITIONS[index], state: cloneState(state) });
