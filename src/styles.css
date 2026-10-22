@@ -317,7 +317,7 @@ h1 span {
 }
 .route-levels {
   display:grid;
-  grid-template-columns:repeat(4,1fr);
+  grid-template-columns:repeat(5,1fr);
   gap:8px;
 }
 .route-level {
@@ -1487,4 +1487,75 @@ h1 span {
     transition:none!important;
     scroll-behavior:auto!important;
   }
+}
+
+/* Mechanism routes: every rule has a visible shape as well as a color. */
+.chapter-overview { margin:0 0 26px; }
+.chapter-heading { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:13px; }
+.chapter-heading h2 { margin:0; font-size:15px; font-weight:500; }
+.chapter-heading p { margin:0; font-size:11px; color:#7a876f; }
+.chapter-nav { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:9px; }
+.chapter-button { display:flex; flex-direction:column; align-items:flex-start; text-align:left; gap:8px; padding:14px 12px; border:1px solid #dce3d2; border-radius:11px; background:#f0f2e8; color:#526b4e; min-width:0; }
+.chapter-button>span { font-size:9px; letter-spacing:1px; color:#839076; }
+.chapter-button strong { font-size:13px; font-weight:600; }
+.chapter-button small { font-size:9px; line-height:1.6; color:#7b876e; }
+.chapter-button.active { background:#e0ead7; border-color:#789567; box-shadow:inset 0 3px 0 #789567; }
+.chapter-button:hover { border-color:#789567; }
+.mechanic-badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:12px; }
+.mechanic-badges span { font-size:10px; padding:4px 7px; border-radius:4px; background:#f7ebd4; color:#917344; }
+.mechanic-status { padding:0 25px 13px; color:#64805b; font-size:11px; line-height:1.8; }
+.color-rose { color:#b54f68; border-color:#c27387; background:#f8dce4; }
+.color-mint { color:#27796a; border-color:#559782; background:#d7eee1; }
+.goal-mark b { font-size:clamp(12px,2vw,21px); font-weight:500; }
+.goal-mark:after { content:none; }
+.tile.delivered .goal-mark:after { position:absolute; right:-6px; top:-6px; content:'✓'; background:#e8f2d9; border-radius:50%; z-index:4; font-size:12px; width:17px; height:17px; display:grid; place-items:center; opacity:1; }
+.sprite.parcel.parcel-rose,.tile.delivered .sprite.parcel-rose { filter:hue-rotate(-42deg) saturate(.9) drop-shadow(0 2px 1px #6f723120); }
+.sprite.parcel.parcel-mint,.tile.delivered .sprite.parcel-mint { filter:hue-rotate(86deg) saturate(.65) drop-shadow(0 2px 1px #6f723120); }
+.parcel-mark { z-index:3; position:absolute; top:46%; left:40%; width:40%; height:36%; display:grid; place-items:center; border:1px solid currentColor; border-radius:4px; font-size:clamp(11px,1.7vw,18px); line-height:1; pointer-events:none; box-shadow:0 1px 2px #0002; }
+.portal-mark { position:absolute; inset:8%; border:3px double #8c78b5; background:#e1d6f5; border-radius:50%; color:#79609e; display:grid; place-items:center; box-shadow:0 0 0 2px #c2b1df44,inset 0 0 8px #ad8ed077; }
+.portal-mark b { font-family:var(--serif); font-size:clamp(13px,2vw,22px); }
+.portal-2 { border-color:#477ba0; background:#d4e4ed; color:#416d8c; }
+.switch-mark { position:absolute; inset:13%; display:grid; place-items:center; border:2px solid #bd9750; border-radius:50%; background:#edddac; color:#8e6b2c; font-size:clamp(14px,2.1vw,22px); box-shadow:0 2px 0 #b9a575; }
+.switch-mark.switched-on { background:#ffdf85; box-shadow:0 0 7px #ffd56f; }
+.tile.bridge { background:#d4e1dd; }
+.tile.bridge.bridge-closed { background:repeating-linear-gradient(90deg,#c8b79e 0,#c8b79e 5px,#ece0c9 5px,#ece0c9 8px); box-shadow:inset 0 0 0 2px #9f8b70; }
+.gate-mark { font-size:clamp(13px,2vw,21px); color:#806c4f; border-radius:50%; background:#fcf0d3db; line-height:1; padding:2px; }
+.bridge-open .gate-mark { background:#f6f3de; opacity:.5; }
+.levels-modal { max-width:760px; }
+.level-picker { display:block; }
+.picker-chapter { margin-top:20px; }
+.picker-chapter h3 { margin:0 0 10px; font-size:14px; font-weight:600; }
+.picker-chapter h3 small { display:block; font-size:10px; margin-top:5px; color:#88947c; font-weight:400; }
+.picker-chapter-levels { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; }
+.level-choice { min-width:0; padding:12px 5px; }
+.level-choice span { text-align:center; }
+@media(min-width:821px) {
+  .site-header { height:82px; }
+  .intro { padding:24px 0 27px; }
+  .intro h1 { font-size:34px; }
+  .intro h1 span { display:inline; }
+  .intro .eyebrow { margin-bottom:13px; }
+}
+@media(max-width:820px) {
+  .chapter-nav { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .chapter-button { padding:11px 10px; gap:5px; }
+}
+@media(max-width:600px) {
+  .chapter-overview { margin:0 0 17px; }
+  .chapter-heading { display:block; margin-bottom:10px; }
+  .chapter-heading h2 { font-size:13px; margin-bottom:5px; }
+  .chapter-heading p { font-size:10px; }
+  .chapter-nav { gap:6px; }
+  .chapter-button { padding:9px 8px; gap:4px; }
+  .chapter-button>span { font-size:8px; letter-spacing:.3px; }
+  .chapter-button strong { font-size:11px; }
+  .chapter-button small { display:none; }
+  .mechanic-badges { margin:5px 0 0; grid-column:1/-1; }
+  .mechanic-badges span { font-size:9px; padding:3px 5px; }
+  .mechanic-status { padding:0 18px 10px; font-size:9px; }
+  .picker-chapter-levels { gap:5px; }
+  .level-choice span { font-size:9px; }
+  .level-choice strong { font-size:18px; }
+  .level-choice { padding:11px 3px; gap:6px; }
+  .site-footer>span:last-child { font-size:6px; }
 }

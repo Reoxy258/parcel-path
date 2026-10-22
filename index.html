@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f7f5ee">
-  <meta name="description" content="把每一份心意，送到刚好的地方。12 个原创关卡，一款不用赶时间的推箱解谜小游戏。">
-  <title>邮差小径 · Parcel Path</title>
+  <meta name="description" content="30 站原创机关邮路：花叶颜色匹配、折叠传送邮门、日月开关桥。六个区域，每区首站可直接试玩。">
+  <title>邮差小径 · 30 站机关邮路</title>
   <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./src/styles.css">
 </head>
@@ -37,19 +37,21 @@
 
     <main>
       <section class="intro" aria-labelledby="game-title">
-        <div><p class="eyebrow"><span></span> 给生活，寄一点小小的快乐</p><h1 id="game-title">每一份心意，<span>都有刚好的去处。</span></h1></div>
-        <div class="intro-note"><span class="postmark">TAKE IT<br><strong>SLOW</strong><i>✳</i></span><p>不赶时间，不怕走错。<br>沿着小径，把温暖送到家。</p></div>
+        <div><p class="eyebrow"><span></span> 全新机关邮路 · 6 个区域 · 30 道谜题</p><h1 id="game-title">把一点巧思，<span>寄到意想不到的地方。</span></h1></div>
+        <div class="intro-note"><span class="postmark">THINK<br><strong>& FOLD</strong><i>✳</i></span><p>认对花叶，折叠远近。<br>让日月桥门，为心意让路。</p></div>
       </section>
+
+      <section class="chapter-overview" aria-label="选择机关区域"><div class="chapter-heading"><h2>今天，想走哪条邮路？</h2><p>每区首站可直接试玩 · 区内逐关解锁</p></div><div id="chapter-nav" class="chapter-nav"></div></section>
 
       <section class="game-layout" aria-label="邮差小径游戏区">
         <aside class="route-card">
           <div class="route-top"><span class="little-stamp"><svg class="icon"><use href="#i-leaf"/></svg></span><span class="section-label">今天的投递路线</span><span id="area-number" class="area-number">01</span></div>
           <p id="area-name" class="area-name">晨光花园</p>
           <h2 id="level-name">第一封来信</h2>
-          <span id="difficulty" class="difficulty">轻松入门</span>
+          <span id="difficulty" class="difficulty">机关入门</span><div id="mechanic-badges" class="mechanic-badges"></div>
           <p id="level-note" class="level-note">走到包裹旁边，把它推到邮戳上。</p>
           <div class="route-divider"></div>
-          <div class="progress-heading"><span>投递进度</span><span><strong id="completed-count">0</strong> / 12</span></div>
+          <div class="progress-heading"><span>全部邮路进度</span><span><strong id="completed-count">0</strong> / <span data-level-total>30</span></span></div>
           <div class="progress-track"><span id="progress-fill"></span></div>
           <div id="route-levels" class="route-levels" aria-label="选择关卡"></div>
           <button id="levels-button" class="all-levels">查看全部站点 <svg class="icon"><use href="#i-arrow"/></svg></button>
@@ -58,7 +60,8 @@
         </aside>
 
         <div class="play-card">
-          <div class="play-header"><div><p class="section-label">YOUR LITTLE DELIVERY</p><h2>第 <span id="level-number">01</span> 站 <span class="level-total">/ 12</span></h2></div><div class="stats"><div><span>步数</span><strong id="move-count">0</strong></div><div><span>推动</span><strong id="push-count">0</strong></div><div class="best-stat"><span id="best-label">最短步数</span><strong id="best-count">2</strong></div></div></div>
+          <div class="play-header"><div><p class="section-label">THE CLEVER LITTLE POST</p><h2>第 <span id="level-number">01</span> 站 <span class="level-total">/ <span data-level-total>30</span></span></h2></div><div class="stats"><div><span>步数</span><strong id="move-count">0</strong></div><div><span>推动</span><strong id="push-count">0</strong></div><div class="best-stat"><span id="best-label">最短步数</span><strong id="best-count">2</strong></div></div></div>
+          <div id="mechanic-status" class="mechanic-status" aria-live="polite">✿ 花朵寄花朵 · ❧ 叶子寄叶子</div>
           <div class="garden-stage"><div class="garden-dots" aria-hidden="true"></div><span class="stage-leaf leaf-one" aria-hidden="true">✦</span><span class="stage-leaf leaf-two" aria-hidden="true">✳</span><div id="board" class="board" role="grid" tabindex="0" aria-label="游戏棋盘，用方向键移动小邮差" aria-describedby="input-guide"></div><span class="stage-caption" aria-hidden="true">a little care goes a long way.</span></div>
           <div class="board-bottom"><div class="legend"><span><i class="legend-parcel"></i>包裹</span><span><i class="legend-goal"></i>投递点</span><span id="delivery-count" class="delivery-count">0 / 1 已送达</span></div><p id="board-status" class="board-status" aria-live="polite">把包裹推到圆形邮戳上</p></div>
           <div class="control-row"><button id="undo-button" class="control-button" disabled><svg class="icon"><use href="#i-undo"/></svg>撤销<span class="key-label">Z</span></button><button id="restart-button" class="control-button"><svg class="icon"><use href="#i-restart"/></svg>重来<span class="key-label">R</span></button><button id="hint-button" class="control-button hint-button"><svg class="icon"><use href="#i-bulb"/></svg><span id="hint-label">一点提示</span><span class="key-label">H</span></button></div>
@@ -67,11 +70,11 @@
 
       <section class="below-game" aria-label="操作说明"><p id="input-guide"><span class="keyboard-symbol">⌘</span> 方向键 / WASD 移动 <span class="guide-dot">·</span> 点击小路行走，或在棋盘上滑动</p><div class="dpad" aria-label="方向控制"><button data-direction="up" aria-label="向上移动">↑</button><button data-direction="left" aria-label="向左移动">←</button><button data-direction="down" aria-label="向下移动">↓</button><button data-direction="right" aria-label="向右移动">→</button></div><p class="gentle-note"><span>✳</span> 走错也没关系，撤销就好。</p></section>
     </main>
-    <footer class="site-footer"><span>一条小径，十二份心意。</span><span>MADE FOR A LITTLE PAUSE <i>✦</i></span></footer>
+    <footer class="site-footer"><span>三种巧思，三十份心意。</span><span>PARCEL PATH · THE MECHANISM ROUTES <i>✦</i></span></footer>
   </div>
 
-  <dialog id="help-dialog" class="modal"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">A SMALL GUIDE</span><h2>投递，没那么着急。</h2><p>把所有包裹推到圆形邮戳上，就能完成这一站。</p><ol class="help-list"><li><strong>走一走</strong><span>方向键、WASD、屏幕方向按钮都能移动。也可以点击空地自动走过去。</span></li><li><strong>推一推</strong><span>站在包裹旁，朝它移动。只能推，不能拉，也不能一次推两个。</span></li><li><strong>慢慢想</strong><span>按 Z 撤销，R 重来，H 看下一步提示。所有站点都没有倒计时。</span></li></ol><div class="star-guide">★★★ 最短步数送达　·　★★ 多用不超过 6 步　·　★ 完成就很棒</div><button class="primary-button full-width" data-close="help-dialog">明白了，出发吧 <svg class="icon"><use href="#i-arrow"/></svg></button></dialog>
-  <dialog id="levels-dialog" class="modal levels-modal"><button class="close-button" data-close="levels-dialog" aria-label="关闭站点选择"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">YOUR POSTAL MAP</span><h2>每一站，都有小惊喜。</h2><p>完成前一站，新的小径就会为你打开。</p><div id="level-picker" class="level-picker"></div></dialog>
+  <dialog id="help-dialog" class="modal"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">THREE LITTLE IDEAS</span><h2>先想邮路，再寄心意。</h2><p>方向键 / WASD / 屏幕方向按钮移动，也可点击小路或在棋盘上滑动。只能推，不能拉。</p><ol class="help-list"><li><strong>✿ 认花叶</strong><span>花朵包裹寄到花朵邮戳，叶子包裹寄到叶子邮戳。颜色与符号一起识别；放错不算送达。</span></li><li><strong>① 折邮路</strong><span>同号邮门成对相连。邮差与包裹踏入都会传到另一端，一步只传一次；出口被占时不能进入。</span></li><li><strong>⏻ 换日月</strong><span>邮差每次踏入开关，日桥与月桥互换开闭；包裹不会触发。桥关闭后，站在桥上的邮差能离开；桥上的包裹需重新开桥再推。</span></li><li><strong>↶ 慢慢想</strong><span>Z 撤销整步（包括传送、开关），R 重来，H 看下一步提示。每区第一站可直接体验。</span></li></ol><div class="star-guide">★★★ 最短步数送达　·　★★ 多用不超过 6 步　·　★ 完成就很棒</div><button class="primary-button full-width" data-close="help-dialog">明白了，出发吧 <svg class="icon"><use href="#i-arrow"/></svg></button></dialog>
+  <dialog id="levels-dialog" class="modal levels-modal"><button class="close-button" data-close="levels-dialog" aria-label="关闭站点选择"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">30 STOPS · 6 NEW ROUTES</span><h2>每条邮路，都有新巧思。</h2><p>每区首站可直接试玩，完成后解锁该区下一站。</p><div id="level-picker" class="level-picker"></div></dialog>
   <dialog id="win-dialog" class="modal win-modal"><div class="win-decoration" aria-hidden="true"><svg><use href="#parcel"/></svg><span>✦</span><span>✳</span></div><span class="modal-eyebrow">DELIVERED WITH LOVE</span><h2 id="win-title">心意，顺利送达。</h2><p id="win-subtitle">这一站的小小任务，完成啦。</p><div id="win-stars" class="win-stars" aria-label="获得三颗星">★★★</div><div id="win-summary" class="win-summary"></div><button id="next-button" class="primary-button full-width">前往下一站 <svg class="icon"><use href="#i-arrow"/></svg></button><button class="win-stay" data-close="win-dialog">再看看这条小径</button></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p class="noscript">这个小游戏需要启用 JavaScript 才能运行。</p></noscript>

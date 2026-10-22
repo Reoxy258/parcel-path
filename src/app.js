@@ -1,6 +1,6 @@
-import { parseLevel, cloneState, step, solve, isWon, walkPath, neighbor, starsFor } from './engine.js';
-import { LEVEL_DEFINITIONS } from './levels.js';
-import { readProgress, saveProgress, unlockedIndex } from './storage.js';
+import { parseLevel, cloneState, step, solve, isWon, isDelivered, isBlocked, COLOR_NAMES, walkPath, neighbor, starsFor } from './engine.js';
+import { LEVEL_DEFINITIONS, CHAPTERS } from './levels.js';
+import { readProgress, saveProgress, isLevelUnlocked } from './storage.js';
 
 const $ = (id) => document.getElementById(id);
 const board = $('board');
@@ -9,13 +9,16 @@ const ids = levels.map((level) => level.id);
 let storage;
 try { storage = window.localStorage; } catch { /* Storage is optional. */ }
 const progress = readProgress(storage, ids);
-let index = Math.min(Math.max(0, ids.indexOf(progress.selected)), unlockedIndex(ids, progress.completed));
+let index = Math.max(0, ids.indexOf(progress.selected));
 let level, state, history = [], revision = 0;
 let worker = null, hintTimer = 0, hintCell = -1, hintBusy = false;
 let walkToken = 0, walking = false, victoryTimer = 0, toastTimer = 0;
 let audio = null, pointer = null, suppressClickUntil = 0;
 const directionNames = { up: '上', right: '右', down: '下', left: '左' };
 const icon = (name, classes = 'icon') => `<svg class="${classes}" aria-hidden="true"><use href="#${name}"/></svg>`;
+const colorSymbol = (color) => ({ rose: '✿', mint: '❧', plain: '·' })[color];
+const canSelect = (i) => isLevelUnlocked(ids, progress.completed, i);
+const mechanicLabels = { match: '花叶匹配', portal: '折叠邮门', switch: '日月桥门' };
 
 function persist() {
   if (!saveProgress(storage, progress)) $('save-note').textContent = '当前浏览器限制了存档；进度会在本次游玩中保留。';
@@ -74,9 +77,13 @@ function cellLabel(cell) {
   if (level.walls.has(cell)) labels.push('花墙，不能通行');
   else {
     if (state.player === cell) labels.push('小邮差');
-    if (state.boxes.includes(cell)) labels.push(level.goals.has(cell) ? '已送达的包裹' : '包裹');
-    if (level.goals.has(cell)) labels.push('投递点');
+    const boxIndex = state.boxes.indexOf(cell);
+    if (boxIndex !== -1) labels.push(`${COLOR_NAMES[state.colors[boxIndex]]}包裹${isDelivered(level, state, cell) ? '，已正确送达' : level.goals.has(cell) ? '，邮戳不匹配' : ''}`);
+    if (level.goals.has(cell)) labels.push(`${COLOR_NAMES[level.goalColors.get(cell)]}邮戳`);
     else if (!state.boxes.includes(cell) && state.player !== cell) labels.push('小路');
+    if (level.portals.has(cell)) labels.push(`${level.portalLabels.get(cell)} 号邮门，入口被占则不能传送`);
+    if (level.switches.has(cell)) labels.push('开关，邮差踏入切换日月桥门');
+    if (level.gates.has(cell)) labels.push(`${level.gatePhases.get(cell) ? '日' : '月'}桥，${isBlocked(level, state, cell) ? '已关闭，桥上邮差可离开，包裹需重新开桥后再推' : '已开启'}`);
   }
   return labels.join('，');
 }
@@ -92,9 +99,17 @@ function renderBoard() {
     let row = '<div role="row" class="grid-row">';
     for (let x = 0; x < level.width; x++) {
       const cell = y * level.width + x, wall = level.walls.has(cell), hasBox = boxes.has(cell), goal = level.goals.has(cell);
-      row += `<button type="button" role="gridcell" tabindex="-1" id="cell-${cell}" data-cell="${cell}" class="tile${wall ? ' wall' : ''}${goal && hasBox ? ' delivered' : ''}${hintCell === cell ? ' hint' : ''}" aria-label="${cellLabel(cell)}"${wall ? ' disabled' : ''}>`;
-      if (goal) row += '<span class="goal-mark" aria-hidden="true"></span>';
-      if (hasBox) row += icon('parcel', 'sprite parcel');
+      const color = goal ? level.goalColors.get(cell) : 'plain';
+      row += `<button type="button" role="gridcell" tabindex="-1" id="cell-${cell}" data-cell="${cell}" class="tile${wall ? ' wall' : ''}${isDelivered(level, state, cell) ? ' delivered' : ''}${level.gates.has(cell) ? ` bridge ${isBlocked(level, state, cell) ? 'bridge-closed' : 'bridge-open'}` : ''}${hintCell === cell ? ' hint' : ''}" aria-label="${cellLabel(cell)}"${wall ? ' disabled' : ''}>`;
+      if (goal) row += `<span class="goal-mark color-${color}" aria-hidden="true"><b>${colorSymbol(color)}</b></span>`;
+      if (level.portals.has(cell)) row += `<span class="portal-mark portal-${level.portalLabels.get(cell)}" aria-hidden="true"><b>${level.portalLabels.get(cell)}</b></span>`;
+      if (level.switches.has(cell)) row += `<span class="switch-mark${state.phase ? ' switched-on' : ''}" aria-hidden="true">⏻</span>`;
+      if (level.gates.has(cell)) row += `<span class="gate-mark" aria-hidden="true">${level.gatePhases.get(cell) ? '☀' : '☾'}</span>`;
+      if (hasBox) {
+        const boxColor = state.colors[state.boxes.indexOf(cell)];
+        row += icon('parcel', `sprite parcel parcel-${boxColor}`);
+        if (boxColor !== 'plain') row += `<span class="parcel-mark color-${boxColor}" aria-hidden="true">${colorSymbol(boxColor)}</span>`;
+      }
       if (state.player === cell) row += icon('courier', 'sprite player');
       row += '</button>';
     }
@@ -103,39 +118,41 @@ function renderBoard() {
   board.innerHTML = rows.join('');
   $('move-count').textContent = state.moves;
   $('push-count').textContent = state.pushes;
-  const delivered = state.boxes.filter((cell) => level.goals.has(cell)).length;
+  const delivered = state.boxes.filter((cell) => isDelivered(level, state, cell)).length;
   $('delivery-count').textContent = `${delivered} / ${level.goals.size} 已送达`;
   $('undo-button').disabled = history.length === 0;
   $('hint-button').disabled = hintBusy || isWon(level, state);
   $('continue-button').hidden = !isWon(level, state);
   $('continue-button').innerHTML = index === levels.length - 1 ? `重访小径 ${icon('i-arrow')}` : `前往下一站 ${icon('i-arrow')}`;
+  $('mechanic-status').textContent = level.gates.size ? `桥路状态：☀ 日桥${state.phase ? '开启' : '关闭'} · ☾ 月桥${state.phase ? '关闭' : '开启'}（踏入 ⏻ 切换）` : level.portals.size ? '同号邮门相连 · 邮差与包裹都能传送 · 出口被占不能进入' : '✿ 花朵寄花朵 · ❧ 叶子寄叶子 · 错色不计送达';
 }
 
 function renderRoute() {
-  const unlocked = unlockedIndex(ids, progress.completed);
   const completed = Object.keys(progress.completed).length;
   $('completed-count').textContent = completed;
   $('progress-fill').style.width = `${completed / levels.length * 100}%`;
-  $('route-levels').innerHTML = levels.map((entry, i) => `<button class="route-level${i === index ? ' active' : ''}${progress.completed[entry.id] ? ' done' : ''}" data-level="${i}" aria-label="第 ${i + 1} 站，${entry.name}${i > unlocked ? '，未解锁' : ''}"${i > unlocked ? ' disabled' : ''}${i === index ? ' aria-current="step"' : ''}>${i > unlocked ? icon('i-lock') : String(i + 1).padStart(2, '0')}</button>`).join('');
+  $('route-levels').innerHTML = levels.map((entry, i) => entry.chapter !== level.chapter ? '' : `<button class="route-level${i === index ? ' active' : ''}${progress.completed[entry.id] ? ' done' : ''}" data-level="${i}" aria-label="第 ${i + 1} 站，${entry.name}${!canSelect(i) ? '，未解锁' : ''}"${!canSelect(i) ? ' disabled' : ''}${i === index ? ' aria-current="step"' : ''}>${!canSelect(i) ? icon('i-lock') : String(i + 1).padStart(2, '0')}</button>`).join('');
+  $('chapter-nav').innerHTML = CHAPTERS.map((chapter, i) => `<button class="chapter-button${level.chapter === i ? ' active' : ''}" data-level="${i * 5}" aria-label="试玩第 ${i + 1} 区，${chapter.name}"${level.chapter === i ? ' aria-current="true"' : ''}><span>0${i + 1} / ${i < 3 ? '新机关' : '组合邮路'}</span><strong>${chapter.name}</strong><small>${chapter.mechanics.map((m) => mechanicLabels[m]).join(' · ')}</small></button>`).join('');
+  $('mechanic-badges').innerHTML = level.mechanics.map((m) => `<span>${mechanicLabels[m]}</span>`).join('');
   const record = progress.completed[level.id];
   $('best-label').textContent = record ? '个人最佳' : '最短步数';
   $('best-count').textContent = record?.moves ?? level.par;
 }
 
 function loadLevel(next) {
-  if (next < 0 || next >= levels.length || next > unlockedIndex(ids, progress.completed)) return;
+  if (!canSelect(next)) return;
   clearTimeout(victoryTimer); cancelWalk();
   $('win-dialog').close(); $('levels-dialog').close();
   index = next; level = levels[index]; state = cloneState(level.initial); history = []; revision++;
   cancelHint();
   progress.selected = level.id; persist();
   $('area-name').textContent = level.area;
-  $('area-number').textContent = String(Math.floor(index / 4) + 1).padStart(2, '0');
+  $('area-number').textContent = String(level.chapter + 1).padStart(2, '0');
   $('level-name').textContent = level.name;
   $('level-note').textContent = level.note;
   $('difficulty').textContent = level.difficulty;
   $('level-number').textContent = String(index + 1).padStart(2, '0');
-  $('board-status').textContent = index === 0 ? '把包裹推到圆形邮戳上' : level.note;
+  $('board-status').textContent = level.note;
   renderBoard(); renderRoute();
 }
 
@@ -150,12 +167,13 @@ function completeLevel() {
   clearTimeout(victoryTimer);
   victoryTimer = setTimeout(() => {
     if (version !== revision || !isWon(level, state)) return;
-    $('win-title').textContent = index === levels.length - 1 ? '十二份心意，全部送达。' : '心意，顺利送达。';
-    $('win-subtitle').textContent = index === levels.length - 1 ? '谢谢你，让每一份温暖都有了去处。' : `${level.name} · ${level.area}`;
+    const allComplete = ids.every((id) => progress.completed[id]);
+    $('win-title').textContent = allComplete ? `${levels.length} 站邮路，全部走过。` : index === levels.length - 1 ? '星光邮路，顺利送达。' : '心意，顺利送达。';
+    $('win-subtitle').textContent = allComplete ? '谢谢你，让每一份温暖都有了去处。' : `${level.name} · ${level.area}`;
     $('win-stars').innerHTML = '★'.repeat(stars) + `<span class="empty">${'★'.repeat(3 - stars)}</span>`;
     $('win-stars').setAttribute('aria-label', `获得 ${stars} 颗星，共 3 颗`);
     $('win-summary').innerHTML = `<span><strong>${state.moves}</strong>步送达</span><span><strong>${state.pushes}</strong>次推动</span><span>最短 <strong>${level.par}</strong>步</span>`;
-    $('next-button').innerHTML = `${index === levels.length - 1 ? '重访这十二条小径' : '前往下一站'} ${icon('i-arrow')}`;
+    $('next-button').innerHTML = `${index === levels.length - 1 ? '查看我的邮路' : '前往下一站'} ${icon('i-arrow')}`;
     sound('win'); openDialog($('win-dialog'));
   }, 220);
 }
@@ -171,7 +189,7 @@ function move(direction, fromWalk = false) {
   }
   history.push(cloneState(state)); state = result.state; revision++;
   cancelHint(); sound(result.pushed ? 'push' : 'move');
-  $('board-status').textContent = result.pushed ? '小心意，又往前了一步。' : level.note;
+  $('board-status').textContent = result.switched ? `邮路切换：日桥${state.phase ? '开启' : '关闭'}，月桥${state.phase ? '关闭' : '开启'}。` : result.teleported ? '穿过折叠邮门，抵达另一端。' : result.pushed ? '先认符号，再把心意送到对应邮戳。' : level.note;
   renderBoard();
   if (isWon(level, state)) completeLevel();
   return true;
@@ -236,11 +254,11 @@ function showHint() {
 }
 
 function showLevelPicker() {
-  const unlocked = unlockedIndex(ids, progress.completed);
-  $('level-picker').innerHTML = levels.map((entry, i) => {
+  $('level-picker').innerHTML = CHAPTERS.map((chapter, chapterIndex) => `<section class="picker-chapter"><h3>0${chapterIndex + 1} ${chapter.name}<small>${chapter.subtitle}</small></h3><div class="picker-chapter-levels">${levels.map((entry, i) => {
+    if (entry.chapter !== chapterIndex) return '';
     const record = progress.completed[entry.id];
-    return `<button class="level-choice${i === index ? ' active' : ''}" data-level="${i}"${i > unlocked ? ' disabled' : ''} aria-label="第 ${i + 1} 站，${entry.name}${record ? `，获得 ${record.stars} 颗星` : i > unlocked ? '，未解锁' : ''}"><strong>${String(i + 1).padStart(2, '0')}</strong><span>${entry.name}</span><em>${i > unlocked ? icon('i-lock') : record ? '★'.repeat(record.stars) : '· · ·'}</em></button>`;
-  }).join('');
+    return `<button class="level-choice${i === index ? ' active' : ''}" data-level="${i}"${!canSelect(i) ? ' disabled' : ''} aria-label="第 ${i + 1} 站，${entry.name}${record ? `，获得 ${record.stars} 颗星` : !canSelect(i) ? '，未解锁' : ''}"><strong>${String(i + 1).padStart(2, '0')}</strong><span>${entry.name}</span><em>${!canSelect(i) ? icon('i-lock') : record ? '★'.repeat(record.stars) : '· · ·'}</em></button>`;
+  }).join('')}</div></section>`).join('');
   openDialog($('levels-dialog'));
 }
 
@@ -260,7 +278,7 @@ $('continue-button').addEventListener('click', nextLevel);
 $('sound-button').addEventListener('click', () => { progress.muted = !progress.muted; updateSound(); persist(); sound(); });
 document.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', () => $(button.dataset.close).close()));
 document.querySelectorAll('[data-direction]').forEach((button) => button.addEventListener('click', () => move(button.dataset.direction)));
-for (const container of [$('route-levels'), $('level-picker')]) {
+for (const container of [$('route-levels'), $('level-picker'), $('chapter-nav')]) {
   container.addEventListener('click', (event) => {
     const button = event.target.closest('[data-level]');
     if (button && !button.disabled) { loadLevel(Number(button.dataset.level)); board.focus({ preventScroll: true }); }
@@ -298,4 +316,5 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+document.querySelectorAll('[data-level-total]').forEach((element) => { element.textContent = levels.length; });
 updateSound(); loadLevel(index);
