@@ -1,9 +1,9 @@
 {
   "name": "parcel-path",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "邮差小径：一款原创主题的 H5 推箱解谜小游戏。",
+  "description": "晴空遗迹：六层30房间的明亮花园动作冒险，自动射击、钥匙探索与资源成长。",
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "node scripts/serve.mjs",

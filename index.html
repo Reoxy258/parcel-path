@@ -2,82 +2,70 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f5ee">
-  <meta name="description" content="30 站原创机关邮路：花叶颜色匹配、折叠传送邮门、日月开关桥。六个区域，每区首站可直接试玩。">
-  <title>邮差小径 · 30 站机关邮路</title>
-  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./src/styles.css?v=2">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5ec">
+  <meta name="description" content="晴空遗迹：明亮的花园房间冒险。移动射击、冲刺躲避、收集钥匙、购买强化，走过六层30个房间，抵达花塔终点。">
+  <title>晴空遗迹 · Sunlit Ruins</title>
+  <link rel="icon" href="./assets/sunlit.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./src/adventure.css?v=3">
 </head>
 <body>
-  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
-    <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v10l9 5 9-5V8M12 13v10M7 5.8l10 5.5"/></symbol>
-    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
-    <symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 4-5 5 5 5M3 9h10a7 7 0 0 1 0 14" transform="translate(1 -2)"/></symbol>
-    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 7M4 4v7h7"/></symbol>
-    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4M8 14a7 7 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3Z"/></symbol>
-    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m12 4-6 5H3v6h3l6 5V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
-    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3v.5"/></symbol>
-    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
-    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10" width="12" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol>
-    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M19 4c-10-2-16 3-14 10s14 9 14-10ZM4 21l10-11"/></symbol>
-    <symbol id="parcel" viewBox="0 0 80 80"><path d="m11 23 29-12 29 12v40L40 74 11 63Z" fill="#ce8d38"/><path d="m11 23 29-12 29 12-29 12Z" fill="#f4c678"/><path d="M11 23 40 35v39L11 63Z" fill="#dfaa53"/><path d="m40 35 29-12v40L40 74Z" fill="#edbb66"/><path d="m27 16 29 12v16l-9 3V32L19 20Z" fill="#fff0c1"/><path d="m20 41 11 4v10l-11-4Z" fill="#fff8e8"/><path d="m23 45 5 2m-5 2 5 2" stroke="#ae824b" stroke-width="1.6"/><path d="m52 56 8-3v7l-8 3Z" fill="#c48634" opacity=".5"/></symbol>
-    <symbol id="courier" viewBox="0 0 80 80"><ellipse cx="40" cy="72" rx="21" ry="5" fill="#1d4d43" opacity=".13"/><path d="m25 60-3 10q8 5 15 0l1-10m7 0v10q9 5 15-1l-5-11" fill="#264b40"/><path d="M22 45q1-14 18-14t19 14l1 17q-19 9-40 0Z" fill="#3d8878"/><path d="M28 40 49 60" stroke="#f0b652" stroke-width="6"/><rect x="43" y="47" width="20" height="19" rx="5" fill="#e7a74b"/><path d="M46 52h14" stroke="#f7ce88" stroke-width="3"/><ellipse cx="39" cy="29" rx="16" ry="17" fill="#f4c49c"/><path d="M23 27q-2-20 17-20 19 1 17 19l-10-9-24 10Z" fill="#e99c4a"/><path d="M20 26q14-13 38-4l3 7q-23-6-40 3Z" fill="#d37e37"/><path d="m30 14 14-3 4 8-14 3Z" fill="#fff2c9"/><circle cx="34" cy="31" r="1.7" fill="#4f463d"/><circle cx="47" cy="31" r="1.7" fill="#4f463d"/><path d="M37 37q4 3 7-1" fill="none" stroke="#b77756" stroke-width="2" stroke-linecap="round"/><path d="m21 43-6 13m43-13 7 9" stroke="#f4c49c" stroke-width="8" stroke-linecap="round"/></symbol>
-  </defs></svg>
-
-  <div class="page-shell">
-    <header class="site-header">
-      <a class="brand" href="./" aria-label="邮差小径首页"><span class="brand-icon"><svg class="icon"><use href="#i-package"/></svg></span><span>邮差小径<small>PARCEL PATH</small></span></a>
-      <nav aria-label="游戏导航">
-        <button id="help-button" class="text-button"><svg class="icon"><use href="#i-help"/></svg><span>怎么玩</span></button>
-        <button id="sound-button" class="sound-button" aria-pressed="false" aria-label="开启音效"><svg class="icon"><use href="#i-sound"/></svg><span id="sound-label">声音关</span></button>
-      </nav>
+  <div class="page">
+    <header class="header">
+      <a class="brand" href="./" aria-label="晴空遗迹首页"><span class="brand-seal">✳</span><span>晴空遗迹<small>SUNLIT RUINS</small></span></a>
+      <p class="header-note">把勇气装进口袋，去花园里冒个险。</p>
+      <nav aria-label="游戏菜单"><button id="help-button" class="quiet-button">ⓘ 怎么玩</button><button id="sound-button" class="quiet-button" aria-pressed="false">♪ 声音关</button><button id="pause-button" class="quiet-button">Ⅱ 暂停</button></nav>
     </header>
 
     <main>
-      <section class="intro" aria-labelledby="game-title">
-        <div><p class="eyebrow"><span></span> 全新机关邮路 · 6 个区域 · 30 道谜题</p><h1 id="game-title">把一点巧思，<span>寄到意想不到的地方。</span></h1></div>
-        <div class="intro-note"><span class="postmark">THINK<br><strong>& FOLD</strong><i>✳</i></span><p>认对花叶，折叠远近。<br>让日月桥门，为心意让路。</p></div>
-      </section>
+      <div class="page-title"><div><p class="eyebrow"><span></span> 六层花园 · 30 个房间 · 一场小小的冒险</p><h1>穿过花门，<em>把晴天找回来。</em></h1></div><span class="edition">EXPLORE · FIGHT · GROW</span></div>
 
-      <section class="chapter-overview" aria-label="选择机关区域"><div class="chapter-heading"><h2>今天，想走哪条邮路？</h2><p>每区首站可直接试玩 · 区内逐关解锁</p></div><div id="chapter-nav" class="chapter-nav"></div></section>
-
-      <section class="game-layout" aria-label="邮差小径游戏区">
-        <aside class="route-card">
-          <div class="route-top"><span class="little-stamp"><svg class="icon"><use href="#i-leaf"/></svg></span><span class="section-label">今天的投递路线</span><span id="area-number" class="area-number">01</span></div>
-          <p id="area-name" class="area-name">晨光花园</p>
-          <h2 id="level-name">第一封来信</h2>
-          <span id="difficulty" class="difficulty">机关入门</span><div id="mechanic-badges" class="mechanic-badges"></div>
-          <p id="level-note" class="level-note">走到包裹旁边，把它推到邮戳上。</p>
-          <div class="route-divider"></div>
-          <div class="progress-heading"><span>全部邮路进度</span><span><strong id="completed-count">0</strong> / <span data-level-total>30</span></span></div>
-          <div class="progress-track"><span id="progress-fill"></span></div>
-          <div id="route-levels" class="route-levels" aria-label="选择关卡"></div>
-          <button id="levels-button" class="all-levels">查看全部站点 <svg class="icon"><use href="#i-arrow"/></svg></button>
-          <button id="continue-button" class="primary-button continue-button" hidden>前往下一站 <svg class="icon"><use href="#i-arrow"/></svg></button>
-          <div class="route-footer"><span class="mini-flower">✳</span><p id="save-note">旅途会自动保存在<br>当前浏览器里。</p><span class="route-doodle">↝</span></div>
+      <section class="adventure-layout" aria-label="晴空遗迹游戏区">
+        <aside class="sidebar">
+          <section class="route-panel">
+            <div class="panel-top"><span class="section-label">YOUR LITTLE JOURNEY</span><strong id="floor-count">01 / 06</strong></div>
+            <h2 id="zone-name">晨露花园</h2><p id="zone-note" class="zone-note">先借一点风，吹开第一扇门</p>
+            <div id="room-map" class="room-map" role="img" aria-label="本层房间地图"></div>
+            <div class="map-legend"><span><i class="map-dot current"></i>所在</span><span><i class="map-dot cleared"></i>已清空</span><span><i class="map-dot"></i>未探索</span></div>
+            <div class="objective"><span>这一刻的小目标</span><p id="objective-text">清空前庭，再去上方寻找钥匙。</p></div>
+            <div class="journey-progress"><span>房间进度</span><strong><span id="clear-count">0</span> / 30</strong></div><div class="progress-track"><span id="progress-fill"></span></div>
+          </section>
+          <section class="hero-panel"><div class="panel-top"><span class="section-label">口袋里的底气</span><span>❧</span></div><div class="attribute-grid"><div><span>➶ 攻击</span><strong id="attack-value">10</strong></div><div><span>◈ 护甲</span><strong id="armor-value">1</strong></div></div><div id="relic-list" class="relic-list"><p>每击败一层守卫，<br>可选择一份随行强化。</p></div></section>
         </aside>
 
-        <div class="play-card">
-          <div class="play-header"><div><p class="section-label">THE CLEVER LITTLE POST</p><h2>第 <span id="level-number">01</span> 站 <span class="level-total">/ <span data-level-total>30</span></span></h2></div><div class="stats"><div><span>步数</span><strong id="move-count">0</strong></div><div><span>推动</span><strong id="push-count">0</strong></div><div class="best-stat"><span id="best-label">最短步数</span><strong id="best-count">2</strong></div></div></div>
-          <div id="mechanic-status" class="mechanic-status" aria-live="polite">✿ 花朵寄花朵 · ❧ 叶子寄叶子</div>
-          <div class="garden-stage"><div class="garden-dots" aria-hidden="true"></div><span class="stage-leaf leaf-one" aria-hidden="true">✦</span><span class="stage-leaf leaf-two" aria-hidden="true">✳</span><div id="board" class="board" role="grid" tabindex="0" aria-label="游戏棋盘，用方向键移动小邮差" aria-describedby="input-guide"></div><span class="stage-caption" aria-hidden="true">a little care goes a long way.</span></div>
-          <div class="board-bottom"><div class="legend"><span><i class="legend-parcel"></i>包裹</span><span><i class="legend-goal"></i>投递点</span><span id="delivery-count" class="delivery-count">0 / 1 已送达</span></div><p id="board-status" class="board-status" aria-live="polite">把包裹推到圆形邮戳上</p></div>
-          <div class="control-row"><button id="undo-button" class="control-button" disabled><svg class="icon"><use href="#i-undo"/></svg>撤销<span class="key-label">Z</span></button><button id="restart-button" class="control-button"><svg class="icon"><use href="#i-restart"/></svg>重来<span class="key-label">R</span></button><button id="hint-button" class="control-button hint-button"><svg class="icon"><use href="#i-bulb"/></svg><span id="hint-label">一点提示</span><span class="key-label">H</span></button></div>
+        <div class="main-column">
+          <section class="game-card" aria-label="当前房间">
+            <div class="game-top"><div><p class="section-label" id="room-number">ROOM 01 / 30</p><h2 id="room-name">风铃前庭</h2></div><div class="inventory"><span class="coin-counter" title="金币，可在补给站购买强化">◉ <strong id="coin-count">0</strong></span><span class="key-counter yellow" title="黄色钥匙，开启守卫门">⚿ <strong id="yellow-count">0</strong></span><span class="key-counter blue" title="蓝色钥匙，开启宝库门">⚿ <strong id="blue-count">0</strong></span></div></div>
+            <div class="vital-row"><span class="heart-icon">♥</span><div class="health-track"><span id="health-fill"></span></div><span id="health-value">120 / 120</span><span id="enemy-count" class="enemy-count">2 位小怪</span></div>
+            <div class="stage" id="stage">
+              <canvas id="game" width="1440" height="864" tabindex="0" role="img" aria-label="花园冒险画面：WASD或方向键移动，自动射击，空格冲刺，E交互，Q喝药。" aria-describedby="control-guide">你的浏览器需要支持 Canvas 才能显示这个游戏。</canvas>
+              <div id="boss-bar" class="boss-bar" hidden><span id="boss-name">花园守卫</span><div><i id="boss-health"></i></div></div>
+              <div id="stage-hint" class="stage-hint">靠近小怪会自动发射飞信</div>
+              <div id="start-panel" class="stage-overlay"><div class="overlay-card"><span class="overlay-flower">✳</span><p class="eyebrow">A SUNNY LITTLE ADVENTURE</p><h2 id="start-title">花门后面，有点热闹。</h2><p id="start-note">移动、躲避，飞信会自动瞄准。<br>收集钥匙与金币，挑战每层守卫。</p><button id="start-button" class="primary-button">带上勇气，出发 →</button><small>WASD 移动 · 空格冲刺 · E 交互 · Q 喝药</small></div></div>
+              <div id="pause-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">❧</span><h2>歇一小会儿。</h2><p>花园会等你，敌人也会。</p><button id="resume-button" class="primary-button">继续冒险 →</button></div></div>
+              <div id="death-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">♧</span><h2>先回前庭，喘口气。</h2><p>已完成的房间、钥匙和强化保留。<br>体力恢复，金币减少 20%。</p><button id="revive-button" class="primary-button">整理口袋，再出发 →</button></div></div>
+              <div id="win-panel" class="stage-overlay" hidden><div class="overlay-card"><span class="overlay-flower">☀</span><p class="eyebrow">YOU BROUGHT THE SUNSHINE BACK</p><h2>晴天，找回来了。</h2><p id="win-summary">六枚晴空印记，让花塔重新亮起。</p><button id="win-new-button" class="primary-button">再走一条新旅程 →</button></div></div>
+            </div>
+            <div class="room-footer"><p id="room-status" role="status" aria-live="polite">先清空前庭，花门就会开启。</p><div class="ability-row"><button id="dash-button" class="ability-button"><span>➶ 冲刺</span><small id="dash-label">SPACE · 就绪</small></button><button id="interact-button" class="ability-button"><span>◇ 交互 / 进门</span><small>E · 靠近花门</small></button><button id="potion-button" class="ability-button"><span>♧ 晴露 <b id="potion-count">2</b></span><small>Q · 恢复 45 体力</small></button></div></div>
+          </section>
+
+          <div class="touch-controls" aria-label="触屏方向控制"><div class="direction-pad"><button data-move="up" aria-label="向上移动">↑</button><button data-move="left" aria-label="向左移动">←</button><button data-move="down" aria-label="向下移动">↓</button><button data-move="right" aria-label="向右移动">→</button></div><p>按住方向移动<br><strong>飞信自动瞄准</strong><br>配合上方冲刺与交互</p></div>
+
+          <section id="shop-panel" class="shop-panel" hidden><div class="shop-heading"><div><span class="section-label">TAKE SOMETHING FOR THE ROAD</span><h2>路上用得着的小东西。</h2></div><span>本层限定库存</span></div><div id="shop-items" class="shop-items"></div></section>
+          <section class="field-notes" aria-label="房间情报"><div><span class="field-icon">✦</span><p><strong id="threat-title">先看一眼，再往前。</strong><span id="threat-detail">灰石挡路，木箱可击碎；绕开水池，留意周期升起的金色荆棘。</span></p></div><span id="enemy-preview" class="enemy-preview"></span></section>
         </div>
       </section>
 
-      <section class="below-game" aria-label="操作说明"><p id="input-guide"><span class="keyboard-symbol">⌘</span> 方向键 / WASD 移动 <span class="guide-dot">·</span> 点击小路行走，或在棋盘上滑动</p><div class="dpad" aria-label="方向控制"><button data-direction="up" aria-label="向上移动">↑</button><button data-direction="left" aria-label="向左移动">←</button><button data-direction="down" aria-label="向下移动">↓</button><button data-direction="right" aria-label="向右移动">→</button></div><p class="gentle-note"><span>✳</span> 走错也没关系，撤销就好。</p></section>
+      <section class="control-guide" id="control-guide"><span><kbd>WASD</kbd> / 方向键移动</span><span><kbd>SPACE</kbd> 冲刺闪避</span><span><kbd>E</kbd> 交互 / 花环</span><span><kbd>Q</kbd> 喝药</span><span>自动瞄准 · 按住画面可手动瞄准</span></section>
     </main>
-    <footer class="site-footer"><span>三种巧思，三十份心意。</span><span>PARCEL PATH · THE MECHANISM ROUTES <i>✦</i></span></footer>
+    <footer class="footer"><span>一点勇气，一口袋晴天。<button id="new-run-button">重新开始</button></span><span>SUNLIT RUINS <i>✳</i> A LITTLE ROOM TO GROW</span></footer>
   </div>
 
-  <dialog id="help-dialog" class="modal"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">THREE LITTLE IDEAS</span><h2>先想邮路，再寄心意。</h2><p>方向键 / WASD / 屏幕方向按钮移动，也可点击小路或在棋盘上滑动。只能推，不能拉。</p><ol class="help-list"><li><strong>✿ 认花叶</strong><span>花朵包裹寄到花朵邮戳，叶子包裹寄到叶子邮戳。颜色与符号一起识别；放错不算送达。</span></li><li><strong>① 折邮路</strong><span>同号邮门成对相连。邮差与包裹踏入都会传到另一端，一步只传一次；出口被占时不能进入。</span></li><li><strong>⏻ 换日月</strong><span>邮差每次踏入开关，日桥与月桥互换开闭；包裹不会触发。桥关闭后，站在桥上的邮差能离开；桥上的包裹需重新开桥再推。</span></li><li><strong>↶ 慢慢想</strong><span>Z 撤销整步（包括传送、开关），R 重来，H 看下一步提示。每区第一站可直接体验。</span></li></ol><div class="star-guide">★★★ 最短步数送达　·　★★ 多用不超过 6 步　·　★ 完成就很棒</div><button class="primary-button full-width" data-close="help-dialog">明白了，出发吧 <svg class="icon"><use href="#i-arrow"/></svg></button></dialog>
-  <dialog id="levels-dialog" class="modal levels-modal"><button class="close-button" data-close="levels-dialog" aria-label="关闭站点选择"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">30 STOPS · 6 NEW ROUTES</span><h2>每条邮路，都有新巧思。</h2><p>每区首站可直接试玩，完成后解锁该区下一站。</p><div id="level-picker" class="level-picker"></div></dialog>
-  <dialog id="win-dialog" class="modal win-modal"><div class="win-decoration" aria-hidden="true"><svg><use href="#parcel"/></svg><span>✦</span><span>✳</span></div><span class="modal-eyebrow">DELIVERED WITH LOVE</span><h2 id="win-title">心意，顺利送达。</h2><p id="win-subtitle">这一站的小小任务，完成啦。</p><div id="win-stars" class="win-stars" aria-label="获得三颗星">★★★</div><div id="win-summary" class="win-summary"></div><button id="next-button" class="primary-button full-width">前往下一站 <svg class="icon"><use href="#i-arrow"/></svg></button><button class="win-stay" data-close="win-dialog">再看看这条小径</button></dialog>
+  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站用金币提升攻击、护甲或购买晴露。门只在首次开启时扣钥匙。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
+  <dialog id="reward-dialog" class="dialog reward-dialog"><p class="eyebrow">A LITTLE GIFT FOR YOUR COURAGE</p><span class="reward-flower">✳</span><h2>挑一份小巧思，陪你走下去。</h2><p>三选一，能力会在这次旅程里一直保留。</p><div id="reward-choices" class="reward-choices"></div></dialog>
+  <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE JOURNEY</p><h2>要从第一层重新出发吗？</h2><p>这会替换当前旅程的房间进度和强化。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前旅程</button><button id="confirm-restart" class="primary-button">重新出发 →</button></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <noscript><p class="noscript">这个小游戏需要启用 JavaScript 才能运行。</p></noscript>
-  <script type="module" src="./src/app.js?v=2"></script>
+  <noscript><p>请启用 JavaScript 以运行这个小游戏。</p></noscript>
+  <script type="module" src="./src/adventure-ui.js?v=3"></script>
 </body>
 </html>
