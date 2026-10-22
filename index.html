@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f5ee">
+  <meta name="description" content="把每一份心意，送到刚好的地方。12 个原创关卡，一款不用赶时间的推箱解谜小游戏。">
+  <title>邮差小径 · Parcel Path</title>
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <svg class="svg-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-package" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm-9 5v10l9 5 9-5V8M12 13v10M7 5.8l10 5.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="m8 4-5 5 5 5M3 9h10a7 7 0 0 1 0 14" transform="translate(1 -2)"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 7M4 4v7h7"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6m-5 3h4M8 14a7 7 0 1 1 8 0c-1 1-1 2-1 3H9c0-1 0-2-1-3Z"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m12 4-6 5H3v6h3l6 5V4Zm4 4a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3v.5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="6" y="10" width="12" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M19 4c-10-2-16 3-14 10s14 9 14-10ZM4 21l10-11"/></symbol>
+    <symbol id="parcel" viewBox="0 0 80 80"><path d="m11 23 29-12 29 12v40L40 74 11 63Z" fill="#ce8d38"/><path d="m11 23 29-12 29 12-29 12Z" fill="#f4c678"/><path d="M11 23 40 35v39L11 63Z" fill="#dfaa53"/><path d="m40 35 29-12v40L40 74Z" fill="#edbb66"/><path d="m27 16 29 12v16l-9 3V32L19 20Z" fill="#fff0c1"/><path d="m20 41 11 4v10l-11-4Z" fill="#fff8e8"/><path d="m23 45 5 2m-5 2 5 2" stroke="#ae824b" stroke-width="1.6"/><path d="m52 56 8-3v7l-8 3Z" fill="#c48634" opacity=".5"/></symbol>
+    <symbol id="courier" viewBox="0 0 80 80"><ellipse cx="40" cy="72" rx="21" ry="5" fill="#1d4d43" opacity=".13"/><path d="m25 60-3 10q8 5 15 0l1-10m7 0v10q9 5 15-1l-5-11" fill="#264b40"/><path d="M22 45q1-14 18-14t19 14l1 17q-19 9-40 0Z" fill="#3d8878"/><path d="M28 40 49 60" stroke="#f0b652" stroke-width="6"/><rect x="43" y="47" width="20" height="19" rx="5" fill="#e7a74b"/><path d="M46 52h14" stroke="#f7ce88" stroke-width="3"/><ellipse cx="39" cy="29" rx="16" ry="17" fill="#f4c49c"/><path d="M23 27q-2-20 17-20 19 1 17 19l-10-9-24 10Z" fill="#e99c4a"/><path d="M20 26q14-13 38-4l3 7q-23-6-40 3Z" fill="#d37e37"/><path d="m30 14 14-3 4 8-14 3Z" fill="#fff2c9"/><circle cx="34" cy="31" r="1.7" fill="#4f463d"/><circle cx="47" cy="31" r="1.7" fill="#4f463d"/><path d="M37 37q4 3 7-1" fill="none" stroke="#b77756" stroke-width="2" stroke-linecap="round"/><path d="m21 43-6 13m43-13 7 9" stroke="#f4c49c" stroke-width="8" stroke-linecap="round"/></symbol>
+  </defs></svg>
+
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="邮差小径首页"><span class="brand-icon"><svg class="icon"><use href="#i-package"/></svg></span><span>邮差小径<small>PARCEL PATH</small></span></a>
+      <nav aria-label="游戏导航">
+        <button id="help-button" class="text-button"><svg class="icon"><use href="#i-help"/></svg><span>怎么玩</span></button>
+        <button id="sound-button" class="sound-button" aria-pressed="false" aria-label="开启音效"><svg class="icon"><use href="#i-sound"/></svg><span id="sound-label">声音关</span></button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="game-title">
+        <div><p class="eyebrow"><span></span> 给生活，寄一点小小的快乐</p><h1 id="game-title">每一份心意，<span>都有刚好的去处。</span></h1></div>
+        <div class="intro-note"><span class="postmark">TAKE IT<br><strong>SLOW</strong><i>✳</i></span><p>不赶时间，不怕走错。<br>沿着小径，把温暖送到家。</p></div>
+      </section>
+
+      <section class="game-layout" aria-label="邮差小径游戏区">
+        <aside class="route-card">
+          <div class="route-top"><span class="little-stamp"><svg class="icon"><use href="#i-leaf"/></svg></span><span class="section-label">今天的投递路线</span><span id="area-number" class="area-number">01</span></div>
+          <p id="area-name" class="area-name">晨光花园</p>
+          <h2 id="level-name">第一封来信</h2>
+          <span id="difficulty" class="difficulty">轻松入门</span>
+          <p id="level-note" class="level-note">走到包裹旁边，把它推到邮戳上。</p>
+          <div class="route-divider"></div>
+          <div class="progress-heading"><span>投递进度</span><span><strong id="completed-count">0</strong> / 12</span></div>
+          <div class="progress-track"><span id="progress-fill"></span></div>
+          <div id="route-levels" class="route-levels" aria-label="选择关卡"></div>
+          <button id="levels-button" class="all-levels">查看全部站点 <svg class="icon"><use href="#i-arrow"/></svg></button>
+          <button id="continue-button" class="primary-button continue-button" hidden>前往下一站 <svg class="icon"><use href="#i-arrow"/></svg></button>
+          <div class="route-footer"><span class="mini-flower">✳</span><p id="save-note">旅途会自动保存在<br>当前浏览器里。</p><span class="route-doodle">↝</span></div>
+        </aside>
+
+        <div class="play-card">
+          <div class="play-header"><div><p class="section-label">YOUR LITTLE DELIVERY</p><h2>第 <span id="level-number">01</span> 站 <span class="level-total">/ 12</span></h2></div><div class="stats"><div><span>步数</span><strong id="move-count">0</strong></div><div><span>推动</span><strong id="push-count">0</strong></div><div class="best-stat"><span id="best-label">最短步数</span><strong id="best-count">2</strong></div></div></div>
+          <div class="garden-stage"><div class="garden-dots" aria-hidden="true"></div><span class="stage-leaf leaf-one" aria-hidden="true">✦</span><span class="stage-leaf leaf-two" aria-hidden="true">✳</span><div id="board" class="board" role="grid" tabindex="0" aria-label="游戏棋盘，用方向键移动小邮差" aria-describedby="input-guide"></div><span class="stage-caption" aria-hidden="true">a little care goes a long way.</span></div>
+          <div class="board-bottom"><div class="legend"><span><i class="legend-parcel"></i>包裹</span><span><i class="legend-goal"></i>投递点</span><span id="delivery-count" class="delivery-count">0 / 1 已送达</span></div><p id="board-status" class="board-status" aria-live="polite">把包裹推到圆形邮戳上</p></div>
+          <div class="control-row"><button id="undo-button" class="control-button" disabled><svg class="icon"><use href="#i-undo"/></svg>撤销<span class="key-label">Z</span></button><button id="restart-button" class="control-button"><svg class="icon"><use href="#i-restart"/></svg>重来<span class="key-label">R</span></button><button id="hint-button" class="control-button hint-button"><svg class="icon"><use href="#i-bulb"/></svg><span id="hint-label">一点提示</span><span class="key-label">H</span></button></div>
+        </div>
+      </section>
+
+      <section class="below-game" aria-label="操作说明"><p id="input-guide"><span class="keyboard-symbol">⌘</span> 方向键 / WASD 移动 <span class="guide-dot">·</span> 点击小路行走，或在棋盘上滑动</p><div class="dpad" aria-label="方向控制"><button data-direction="up" aria-label="向上移动">↑</button><button data-direction="left" aria-label="向左移动">←</button><button data-direction="down" aria-label="向下移动">↓</button><button data-direction="right" aria-label="向右移动">→</button></div><p class="gentle-note"><span>✳</span> 走错也没关系，撤销就好。</p></section>
+    </main>
+    <footer class="site-footer"><span>一条小径，十二份心意。</span><span>MADE FOR A LITTLE PAUSE <i>✦</i></span></footer>
+  </div>
+
+  <dialog id="help-dialog" class="modal"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">A SMALL GUIDE</span><h2>投递，没那么着急。</h2><p>把所有包裹推到圆形邮戳上，就能完成这一站。</p><ol class="help-list"><li><strong>走一走</strong><span>方向键、WASD、屏幕方向按钮都能移动。也可以点击空地自动走过去。</span></li><li><strong>推一推</strong><span>站在包裹旁，朝它移动。只能推，不能拉，也不能一次推两个。</span></li><li><strong>慢慢想</strong><span>按 Z 撤销，R 重来，H 看下一步提示。所有站点都没有倒计时。</span></li></ol><div class="star-guide">★★★ 最短步数送达　·　★★ 多用不超过 6 步　·　★ 完成就很棒</div><button class="primary-button full-width" data-close="help-dialog">明白了，出发吧 <svg class="icon"><use href="#i-arrow"/></svg></button></dialog>
+  <dialog id="levels-dialog" class="modal levels-modal"><button class="close-button" data-close="levels-dialog" aria-label="关闭站点选择"><svg class="icon"><use href="#i-close"/></svg></button><span class="modal-eyebrow">YOUR POSTAL MAP</span><h2>每一站，都有小惊喜。</h2><p>完成前一站，新的小径就会为你打开。</p><div id="level-picker" class="level-picker"></div></dialog>
+  <dialog id="win-dialog" class="modal win-modal"><div class="win-decoration" aria-hidden="true"><svg><use href="#parcel"/></svg><span>✦</span><span>✳</span></div><span class="modal-eyebrow">DELIVERED WITH LOVE</span><h2 id="win-title">心意，顺利送达。</h2><p id="win-subtitle">这一站的小小任务，完成啦。</p><div id="win-stars" class="win-stars" aria-label="获得三颗星">★★★</div><div id="win-summary" class="win-summary"></div><button id="next-button" class="primary-button full-width">前往下一站 <svg class="icon"><use href="#i-arrow"/></svg></button><button class="win-stay" data-close="win-dialog">再看看这条小径</button></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">这个小游戏需要启用 JavaScript 才能运行。</p></noscript>
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
