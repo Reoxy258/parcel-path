@@ -50,9 +50,21 @@ npm run build
 
 构建结果位于 `dist/`，可直接放在任意静态 HTTPS 托管服务上。资源路径均为相对路径，支持仓库子路径部署。
 
-已配置 GitHub Actions：提交或 PR 自动运行测试和静态构建。该工作流只检查代码，不自动发布站点。
+已配置 GitHub Actions：提交或 PR 自动运行测试和静态构建。
 
-若使用 GitHub Pages，私有仓库是否可启用 Pages 取决于账户方案；可参考 [GitHub 官方文档](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。发布站点与仓库的访问范围需分别配置。
+## 发布在线试玩
+
+已提供 `.github/workflows/pages.yml`，在公有仓库中将 `dist/` 发布到 GitHub Pages。首次启用步骤：
+
+1. 在仓库 Settings → General → Danger Zone → Change repository visibility 中将仓库设为 Public。源码和提交历史将对所有人可见。
+2. 在 Settings → Pages → Build and deployment → Source 中选择 GitHub Actions。
+3. 在 Actions 中选择 **Publish game to GitHub Pages**，点击 **Run workflow**，选择 `main` 并运行。
+
+部署成功后，在线试玩地址为 https://reoxy258.github.io/parcel-path/ 。这个地址在首次部署成功前不可用。
+
+之后推送到 `main` 会先验证所有关卡、构建，再自动更新网站。私有仓库中的发布任务会跳过。
+
+可参考 [GitHub Pages 官方文档](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)。
 
 ## 项目结构
 
