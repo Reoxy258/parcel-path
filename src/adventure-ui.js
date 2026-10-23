@@ -1,6 +1,6 @@
-import {createRun, readRun, saveRun, update, takeEvents, shopItems, buy, chooseRelic, revive, roomCleared} from './adventure.js?v=4';
-import {WORLD, ZONES, RELICS, ENEMY_TYPES, choicesFor, doorKey, WIDTH, HEIGHT} from './world.js?v=4';
-import {loadArt, render} from './scene.js?v=4';
+import {createRun, readRun, saveRun, update, takeEvents, shopItems, buy, chooseRelic, revive, roomCleared} from './adventure.js?v=5';
+import {WORLD, ZONES, RELICS, ENEMY_TYPES, choicesFor, doorKey, WIDTH, HEIGHT} from './world.js?v=5';
+import {loadArt, render} from './scene.js?v=5';
 
 const $ = id => document.getElementById(id);
 let storage;
@@ -71,7 +71,7 @@ function goal() {
   const room=WORLD[run.room];
   if (!roomCleared(run)) return room.kind===4?'击败守卫，选择强化，再从花环前进。':'边走边躲，清空房间后花门会打开。';
   if (room.kind===1) return run.scene.pickups.some(p=>p.type==='yellow'||p.type==='blue')?'捡走黄、蓝钥匙，再从下方返回前庭。':'返回前庭：黄钥匙挑战守卫，蓝钥匙探索宝库。';
-  if (room.kind===2) return '花金币提升攻击、护甲或补充晴露，向右返回前庭。';
+  if (room.kind===2) return '走近货架按 E 购买强化，向右返回前庭。';
   if (room.kind===3) return '捡走晶石和药水，向左返回前庭。';
   if (room.kind===4) return '到下方发光花环，按 E '+(room.floor===5?'抵达终点。':'进入下一层。');
   if (!run.records[room.floor*5+1].cleared) return '去上方守钥花坛，取得黄、蓝两种钥匙。';
@@ -224,5 +224,5 @@ function frame(now) {
   pulses={};render(ctx,run,images,{aim,reducedMotion});
   if(now-lastHud>90){syncHud();lastHud=now;}requestAnimationFrame(frame);
 }
-loadArt().then(loaded=>{images=loaded;if(Object.keys(images).length<5)toast('部分图片未加载，已用备用图形继续显示。');});
+loadArt().then(loaded=>{images=loaded;if(Object.keys(images).length<4)toast('部分图片未加载，已用备用图形继续显示。');});
 syncHud();requestAnimationFrame(frame);

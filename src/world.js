@@ -39,7 +39,9 @@ export function mulberry32(seed) {
 
 const titles = ['风铃前庭', '守钥花坛', '旅行补给站', '蓝钥宝库', '守卫的花门'];
 const REWARD_POINTS = [[326, 216], [394, 216], [360, 255], [360, 216], [410, 216], [310, 216]];
-const SPAWN_ANCHORS = [[192, 120], [528, 312], [528, 120], [192, 312]];
+const SPAWN_ANCHORS = [[192, 120], [528, 312], [528, 120], [192, 312], [104, 216], [616, 216]];
+// 补给站货架坐标（与 shopItems 顺序一一对应：攻击 / 护甲 / 药水 / 体力）。
+export const SHOP_STALLS = [{ x: 160, y: 190 }, { x: 300, y: 190 }, { x: 440, y: 190 }, { x: 580, y: 190 }];
 const CORNERS = [{ x: 80, y: 80 }, { x: 640, y: 80 }, { x: 80, y: 352 }, { x: 640, y: 352 }];
 const DOOR_POINTS = { north: [360, 30], east: [690, 216], south: [360, 402], west: [30, 216] };
 
@@ -132,15 +134,16 @@ function layoutReachable(obstacles) {
 }
 function enemyTypesFor(rand, floor, kind, id) {
   if (kind === 2) return [];
-  if (id === 0) return ['fly', 'fly'];
+  if (id === 0) return ['fly', 'fly', 'fly'];
   if (kind === 4) {
     const types = ['guardian'];
     if (floor >= 1) types.push('fly');
-    if (floor >= 3) types.push(rand() < .5 ? 'spider' : 'fly');
-    if (floor >= 5) types.push(rand() < .5 ? 'hopper' : 'spider');
+    if (floor >= 2) types.push(rand() < .5 ? 'spider' : 'fly');
+    if (floor >= 3) types.push(rand() < .5 ? 'hopper' : 'spider');
+    if (floor >= 5) types.push(rand() < .5 ? 'fly' : 'hopper');
     return types;
   }
-  const count = [2, 2, 3, 3, 4, 4][floor];
+  const count = [3, 4, 4, 5, 5, 6][floor];
   const pool = floor === 0 ? ['fly', 'hopper', 'mushroom']
     : floor === 1 ? ['fly', 'hopper', 'mushroom', 'spider']
       : ['fly', 'spider', 'mushroom', 'hopper'];
@@ -190,7 +193,7 @@ export function generateWorld(seed) {
     const enemies = enemyTypesFor(rand, floor, kind, id).map((type, i) => {
       const point = type === 'guardian'
         ? { x: 360, y: 120 }
-        : { x: SPAWN_ANCHORS[i % 4][0] + Math.round((rand() * 2 - 1) * 32), y: SPAWN_ANCHORS[i % 4][1] + Math.round((rand() * 2 - 1) * 32) };
+        : { x: SPAWN_ANCHORS[i % SPAWN_ANCHORS.length][0] + Math.round((rand() * 2 - 1) * 32), y: SPAWN_ANCHORS[i % SPAWN_ANCHORS.length][1] + Math.round((rand() * 2 - 1) * 32) };
       const settled = settleAnchor(obstacles, point.x, point.y, type === 'guardian' ? 26 : 14);
       return ensureLining(obstacles, { id: `e${i}`, type, x: Math.round(settled.x), y: Math.round(settled.y) }, rand);
     });

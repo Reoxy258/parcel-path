@@ -36,7 +36,7 @@
         <div class="main-column">
           <section class="game-card" aria-label="当前房间">
             <div class="game-top"><div><p class="section-label" id="room-number">ROOM 01 / 30</p><h2 id="room-name">风铃前庭</h2></div><div class="inventory"><span class="coin-counter" title="金币，可在补给站购买强化">◉ <strong id="coin-count">0</strong></span><span class="key-counter yellow" title="黄色钥匙，开启守卫门">⚿ <strong id="yellow-count">0</strong></span><span class="key-counter blue" title="蓝色钥匙，开启宝库门">⚿ <strong id="blue-count">0</strong></span></div></div>
-            <div class="vital-row"><span class="heart-icon">♥</span><div class="health-track"><span id="health-fill"></span></div><span id="health-value">120 / 120</span><span id="enemy-count" class="enemy-count">2 位小怪</span></div>
+            <div class="vital-row"><span class="heart-icon">♥</span><div class="health-track"><span id="health-fill"></span></div><span id="health-value">120 / 120</span><span id="enemy-count" class="enemy-count">3 位小怪</span></div>
             <div class="stage" id="stage">
               <canvas id="game" width="1440" height="864" tabindex="0" role="img" aria-label="花园冒险画面：WASD或方向键移动，自动射击，空格冲刺，E交互，Q喝药。" aria-describedby="control-guide">你的浏览器需要支持 Canvas 才能显示这个游戏。</canvas>
               <div id="boss-bar" class="boss-bar" hidden><span id="boss-name">花园守卫</span><div><i id="boss-health"></i></div></div>
@@ -51,7 +51,7 @@
 
           <div class="touch-controls" aria-label="触屏方向控制"><div class="direction-pad"><button data-move="up" aria-label="向上移动">↑</button><button data-move="left" aria-label="向左移动">←</button><button data-move="down" aria-label="向下移动">↓</button><button data-move="right" aria-label="向右移动">→</button></div><p>按住方向移动<br><strong>飞信自动瞄准</strong><br>配合上方冲刺与交互</p></div>
 
-          <section id="shop-panel" class="shop-panel" hidden><div class="shop-heading"><div><span class="section-label">TAKE SOMETHING FOR THE ROAD</span><h2>路上用得着的小东西。</h2></div><span>本层限定库存</span></div><div id="shop-items" class="shop-items"></div></section>
+          <section id="shop-panel" class="shop-panel" hidden><div class="shop-heading"><div><span class="section-label">TAKE SOMETHING FOR THE ROAD</span><h2>路上用得着的小东西。</h2></div><span>本层限定库存 · 游戏内走近货架按 E 购买</span></div><div id="shop-items" class="shop-items"></div></section>
           <section class="field-notes" aria-label="房间情报"><div><span class="field-icon">✦</span><p><strong id="threat-title">先看一眼，再往前。</strong><span id="threat-detail">灰石挡路，木箱可击碎；绕开水池，留意周期升起的金色荆棘。</span></p></div><span id="enemy-preview" class="enemy-preview"></span></section>
         </div>
       </section>
@@ -61,11 +61,11 @@
     <footer class="footer"><span>一点勇气，一口袋晴天。<button id="new-run-button">重新开始</button></span><span>SUNLIT RUINS <i>✳</i> A LITTLE ROOM TO GROW</span></footer>
   </div>
 
-  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站用金币提升攻击、护甲或购买晴露。门只在首次开启时扣钥匙。护甲越高减伤越多，但收益会递减——攻击与体力同样值得投资。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间，每条旅程的房间地形、敌群与晶石都会按旅程印记随机生成。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
+  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站把货架摆进了店里：走近按 E 用金币买攻击、护甲或晴露，页面下方清单同样可点。门只在首次开启时扣钥匙。护甲越高减伤越多，但收益会递减——攻击与体力同样值得投资。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间，每条旅程的房间地形、敌群与晶石都会按旅程印记随机生成。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
   <dialog id="reward-dialog" class="dialog reward-dialog"><p class="eyebrow">A LITTLE GIFT FOR YOUR COURAGE</p><span class="reward-flower">✳</span><h2>挑一份小巧思，陪你走下去。</h2><p>三选一，能力会在这次旅程里一直保留。</p><div id="reward-choices" class="reward-choices"></div></dialog>
   <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE JOURNEY</p><h2>要从第一层重新出发吗？</h2><p>重新出发会开启一条全新旅程：房间布局重新随机，进度和强化从头开始。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前旅程</button><button id="confirm-restart" class="primary-button">重新出发 →</button></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p>请启用 JavaScript 以运行这个小游戏。</p></noscript>
-  <script type="module" src="./src/adventure-ui.js?v=4"></script>
+  <script type="module" src="./src/adventure-ui.js?v=5"></script>
 </body>
 </html>

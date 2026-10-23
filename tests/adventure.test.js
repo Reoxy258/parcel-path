@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WORLD, ROOM_COUNT, choicesFor, doorPosition } from '../src/world.js?v=4';
+import { WORLD, ROOM_COUNT, choicesFor, doorPosition } from '../src/world.js?v=5';
 import {
   SAVE_KEY, createRun, enterRoom, blocked, moveActor, transition, interact,
   update, roomCleared, chooseRelic, shopItems, buy, revive, usePotion,
   saveRun, readRun,
-} from '../src/adventure.js?v=4';
+} from '../src/adventure.js?v=5';
 
 const memoryStorage = () => {
   const values = new Map();

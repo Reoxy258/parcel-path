@@ -1,4 +1,5 @@
-import { WIDTH, HEIGHT, WORLD, ZONES, ENEMY_TYPES, doorPosition, doorKey } from './world.js?v=4';
+import { WIDTH, HEIGHT, WORLD, ZONES, ENEMY_TYPES, SHOP_STALLS, doorPosition, doorKey } from './world.js?v=5';
+import { shopItems } from './adventure.js?v=5';
 
 const round = (ctx,x,y,w,h,r=6) => {ctx.beginPath();ctx.roundRect(x,y,w,h,r);};
 function label(ctx,text,x,y,size=12,color='#68795c',align='center') {
@@ -7,7 +8,7 @@ function label(ctx,text,x,y,size=12,color='#68795c',align='center') {
 function ellipse(ctx,x,y,rx,ry,color) {ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
 
 export async function loadArt() {
-  const files={hero:'courier.svg',fly:'sprites/fly.png',hopper:'sprites/hopper.png',mushroom:'sprites/mushroom.png',spider:'sprites/spider.png'};
+  const files={fly:'sprites/fly.png',hopper:'sprites/hopper.png',mushroom:'sprites/mushroom.png',spider:'sprites/spider.png'};
   const images={};
   await Promise.allSettled(Object.entries(files).map(([key,file])=>new Promise((resolve,reject)=>{
     const image=new Image();image.onload=()=>{images[key]=image;resolve();};image.onerror=()=>reject(new Error(file));image.src=new URL(`../assets/${file}?v=3`,import.meta.url).href;
@@ -45,38 +46,63 @@ function drawDoor(ctx,run,door) {
   const offsets={north:[0,32],south:[0,-32],west:[39,37],east:[-39,37]};
   const o=offsets[door.direction];label(ctx,text,x+o[0],y+o[1],10,combat?'#84916c':'#687e61');
 }
+// 障碍物统一改用干净的几何图形：六边形多面石、三面立方体货箱、
+// 圆形涟漪池塘与三角警示荆棘，配合明亮色块保持晴空花园的基调。
 function drawObstacle(ctx,o,run) {
   if(o.hp<=0)return;
-  const {x,y,w,h}=o;
+  const cx=o.x+o.w/2,cy=o.y+o.h/2;
   if(o.type==='water'){
-    round(ctx,x-2,y-2,w+4,h+4,11);ctx.fillStyle='#c0d4bb';ctx.fill();
-    round(ctx,x+1,y+1,w-2,h-2,10);ctx.fillStyle='#aad2ce';ctx.fill();
-    ctx.strokeStyle='#edf7df';ctx.lineWidth=2;
-    for(let i=0;i<2;i++){ctx.beginPath();ctx.moveTo(x+8,y+13+i*12);ctx.quadraticCurveTo(x+18,y+9+i*12,x+29,y+14+i*12);ctx.stroke();}
+    ellipse(ctx,cx+2,cy+3,24,22,'#a9c4b4');
+    ellipse(ctx,cx,cy,22.5,20.5,'#8ec0bd');
+    for(let i=0;i<3;i++){
+      const t=(run.time*.5+i/3)%1;
+      ctx.globalAlpha=(1-t)*.55;
+      ctx.strokeStyle='#eaf6e2';ctx.lineWidth=2;
+      ctx.beginPath();ctx.ellipse(cx,cy,6+t*15,5+t*13,0,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+    ellipse(ctx,cx-7,cy-6,3.5,2.4,'#f4ffe9');
+    ellipse(ctx,cx+8,cy+5,2.6,1.8,'#f4ffe9');
     return;
   }
   if(o.type==='spikes'){
     const phase=(run.time+o.x*.003)%2.8,active=phase<.9;
-    round(ctx,x+2,y+2,w-4,h-4,9);ctx.fillStyle=active?'#dfbc75':'#d5dfb1';ctx.fill();
+    round(ctx,cx-19,cy-16,38,33,6);
+    ctx.fillStyle=active?'#e7c377':'#dbe4b6';ctx.fill();
+    ctx.strokeStyle='#b7a268';ctx.lineWidth=1.5;ctx.stroke();
     for(let i=0;i<3;i++)for(let j=0;j<2;j++){
-      if(active){ctx.fillStyle='#fff3c2';ctx.beginPath();ctx.moveTo(x+6+i*11,y+18+j*12);ctx.lineTo(x+11+i*11,y+8+j*12);ctx.lineTo(x+16+i*11,y+18+j*12);ctx.fill();}
-      else{ellipse(ctx,x+10+i*10,y+14+j*12,3,2,'#95ad70');}
+      const bx=cx-13+i*13,by=cy+8+j*10;
+      if(active){
+        ctx.fillStyle='#fff4c8';ctx.strokeStyle='#c79c4e';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(bx-5.5,by);ctx.lineTo(bx,by-14);ctx.lineTo(bx+5.5,by);ctx.closePath();ctx.fill();ctx.stroke();
+      }else{
+        ctx.fillStyle='#96a877';
+        ctx.beginPath();ctx.moveTo(bx-5,by-3);ctx.lineTo(bx,by-8);ctx.lineTo(bx+5,by-3);ctx.lineTo(bx,by+2);ctx.closePath();ctx.fill();
+      }
     }
-    if(phase>2.4){ctx.strokeStyle='#d7b96f';ctx.lineWidth=2;round(ctx,x-1,y-1,w+2,h+2,9);ctx.stroke();}
+    if(phase>2.4){ctx.strokeStyle='#d7b96f';ctx.lineWidth=2;round(ctx,cx-21,cy-18,42,37,7);ctx.stroke();}
     return;
   }
-  ellipse(ctx,x+21,y+38,25,7,'#75865c20');
+  ellipse(ctx,cx,cy+18,22,6,'#75865c20');
   if(o.type==='rock'){
-    round(ctx,x,y-7,w,h+5,11);ctx.fillStyle='#acb5a1';ctx.fill();
-    round(ctx,x+2,y-8,w-4,h-9,10);ctx.fillStyle='#c6cbbb';ctx.fill();
-    ctx.strokeStyle='#919e8a';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x+8,y+13);ctx.lineTo(x+19,y+8);ctx.lineTo(x+30,y+14);ctx.stroke();
-    ellipse(ctx,x+33,y+23,8,4,'#99b77c');ellipse(ctx,x+28,y+29,6,3,'#acbf80');
+    const poly=(pts,ox=0,oy=0)=>{ctx.beginPath();pts.forEach(([px,py],i)=>i?ctx.lineTo(cx+px+ox,cy+py+oy):ctx.moveTo(cx+px+ox,cy+py+oy));ctx.closePath();};
+    poly([[-17,-1],[-9,-13],[9,-13],[17,-1],[9,12],[-9,12]],0,2);
+    ctx.fillStyle='#a9b3a0';ctx.fill();ctx.strokeStyle='#8f9a8a';ctx.lineWidth=1.5;ctx.stroke();
+    poly([[-17,-1],[-9,-13],[9,-13],[17,-1],[7,-4],[-6,-4]],0,2);
+    ctx.fillStyle='#cdd6c4';ctx.fill();
+    ctx.strokeStyle='#9aa78f';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx+2,cy-2);ctx.lineTo(cx-3,cy+5);ctx.lineTo(cx+1,cy+11);ctx.stroke();
+    ctx.fillStyle='#9db77f';
+    ctx.beginPath();ctx.moveTo(cx-12,cy-8);ctx.lineTo(cx-7,cy-12);ctx.lineTo(cx-6,cy-5);ctx.closePath();ctx.fill();
+    ctx.beginPath();ctx.moveTo(cx+9,cy-9);ctx.lineTo(cx+14,cy-12);ctx.lineTo(cx+12,cy-4);ctx.closePath();ctx.fill();
   }else{
-    round(ctx,x+1,y-3,w-2,h+3,5);ctx.fillStyle='#caab74';ctx.fill();
-    round(ctx,x+3,y-6,w-6,h-5,4);ctx.fillStyle='#e2c28b';ctx.fill();
-    ctx.strokeStyle='#b99662';ctx.lineWidth=2;ctx.strokeRect(x+7,y,w-14,h-13);
-    ctx.beginPath();ctx.moveTo(x+7,y);ctx.lineTo(x+w-7,y+h-13);ctx.moveTo(x+w-7,y);ctx.lineTo(x+7,y+h-13);ctx.stroke();
-    round(ctx,x+14,y+7,12,13,2);ctx.fillStyle='#fff3d6';ctx.fill();label(ctx,'✿',x+20,y+13,9,'#bc975d');
+    ctx.fillStyle='#d9b578';round(ctx,cx-18,cy-8,32,24,3);ctx.fill();
+    ctx.fillStyle='#bd9660';ctx.beginPath();ctx.moveTo(cx+14,cy-8);ctx.lineTo(cx+20,cy-14);ctx.lineTo(cx+20,cy+10);ctx.lineTo(cx+14,cy+16);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#eccd8f';ctx.beginPath();ctx.moveTo(cx-18,cy-8);ctx.lineTo(cx-12,cy-14);ctx.lineTo(cx+20,cy-14);ctx.lineTo(cx+14,cy-8);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#a97f4c';ctx.lineWidth=1.6;
+    ctx.beginPath();ctx.moveTo(cx-13,cy-3);ctx.lineTo(cx,cy+12);ctx.moveTo(cx,cy-3);ctx.lineTo(cx-13,cy+12);ctx.stroke();
+    ctx.strokeRect(cx-13.5,cy-3.5,14,16);
+    label(ctx,'✿',cx-6.5,cy+5,10,'#bc975d');
   }
 }
 function drawPickup(ctx,p,t) {
@@ -124,24 +150,98 @@ function drawEnemy(ctx,e,images,run) {
     round(ctx,e.x-17,e.y-35,34*Math.max(0,e.hp/e.maxHp),4,2);ctx.fillStyle='#8ca36c';ctx.fill();
   }
 }
-function drawHero(ctx,run,images) {
+// 主角改为纯 Canvas 手绘的小旅行家：圆润身形 + 草帽 + 会看方向的眼睛，
+// 走路时小脚交替、身体轻晃，冲刺时红围巾向后飘。
+let heroPhase=0,heroLast={x:0,y:0};
+function drawHero(ctx,run) {
   const h=run.hero;
-  if(h.dashTime>0){for(let i=1;i<5;i++)ellipse(ctx,h.x-h.dashX*i*9,h.y-h.dashY*i*9,12-i*2,8-i,'#ffffff66');}
-  ellipse(ctx,h.x,h.y+16,17,5,'#5a73552b');
-  ctx.save();if(h.invuln>0 && Math.floor(run.time*15)%2)ctx.globalAlpha=.48;
-  if(images.hero)ctx.drawImage(images.hero,h.x-29,h.y-38,58,58);
-  else{ellipse(ctx,h.x,h.y,12,14,'#6a9e7d');ellipse(ctx,h.x,h.y-15,11,11,'#f0c499');}
+  const moved=Math.hypot(h.x-heroLast.x,h.y-heroLast.y);
+  heroPhase=moved>.35?heroPhase+moved*.11:heroPhase*.9;
+  heroLast={x:h.x,y:h.y};
+  const walk=Math.sin(heroPhase),bob=Math.abs(Math.cos(heroPhase))*2;
+  const face=(h.facingX||0)>=0?1:-1;
+  const lookX=(h.facingX||0)*3.1,lookY=(h.facingY||0)*2.3;
+  const blink=(run.time%3.7)<.12,dashing=h.dashTime>0;
+  if(dashing)for(let i=1;i<4;i++)ellipse(ctx,h.x-h.dashX*i*11,h.y-h.dashY*i*11,11-i*2.5,8-i*2,'#ffffff55');
+  ellipse(ctx,h.x,h.y+17,15,5,'#5a73552b');
+  ctx.save();
+  if(h.invuln>0 && Math.floor(run.time*15)%2)ctx.globalAlpha=.48;
+  ctx.translate(h.x,h.y+2-bob);
+  const trail=dashing?26:Math.abs(walk)*9;
+  if(trail>3){
+    const tx=-h.dashX*trail-face*4,ty=-h.dashY*trail*.5+6;
+    ctx.strokeStyle='#d97f66';ctx.lineWidth=4.5;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(0,-12);
+    ctx.quadraticCurveTo(tx*.5,-12+Math.sin(run.time*22)*3,tx,ty-6);
+    ctx.stroke();
+  }
+  ctx.rotate(walk*.08*face);
+  const liftL=Math.max(0,walk)*4,liftR=Math.max(0,-walk)*4;
+  ellipse(ctx,-6,13-liftL,5.5,3.2,'#8a6248');
+  ellipse(ctx,6,13-liftR,5.5,3.2,'#8a6248');
+  round(ctx,-face*15-5,-6,10,13,4);ctx.fillStyle='#b3865a';ctx.fill();
+  ctx.strokeStyle='#8f6844';ctx.lineWidth=1.5;ctx.stroke();
+  round(ctx,-11.5,-15,23,26,11);ctx.fillStyle='#7cab84';ctx.fill();
+  round(ctx,-6.5,-9,13,17,8);ctx.fillStyle='#f4ecd2';ctx.fill();
+  round(ctx,-10,-17,20,7,3.5);ctx.fillStyle='#d97f66';ctx.fill();
+  ellipse(ctx,-12.5,-3,3.4,5.2,'#6f9c78');ellipse(ctx,12.5,-3,3.4,5.2,'#6f9c78');
+  ellipse(ctx,0,-27,13.5,13,'#f6d9b0');
+  ellipse(ctx,0,-32.5,11,3.5,'#7a5a40');
+  if(blink){
+    ctx.strokeStyle='#3f3a33';ctx.lineWidth=1.6;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-6.2+lookX,-27+lookY);ctx.lineTo(-2.8+lookX,-27+lookY);
+    ctx.moveTo(2.8+lookX,-27+lookY);ctx.lineTo(6.2+lookX,-27+lookY);ctx.stroke();
+  }else{
+    ellipse(ctx,-4.6+lookX,-27+lookY,2,2.2,'#3f3a33');
+    ellipse(ctx,4.6+lookX,-27+lookY,2,2.2,'#3f3a33');
+    ellipse(ctx,-4.1+lookX,-27.8+lookY,.7,.8,'#ffffffcc');
+    ellipse(ctx,5.1+lookX,-27.8+lookY,.7,.8,'#ffffffcc');
+  }
+  ellipse(ctx,-8.4+lookX*.4,-23.4,2.6,1.7,'#f2b5a0d9');
+  ellipse(ctx,8.4+lookX*.4,-23.4,2.6,1.7,'#f2b5a0d9');
+  ctx.strokeStyle='#a3765a';ctx.lineWidth=1.4;ctx.lineCap='round';
+  ctx.beginPath();ctx.arc(lookX*.7,-24.4+lookY*.4,2.6,.25*Math.PI,.75*Math.PI);ctx.stroke();
+  ellipse(ctx,0,-34.5,17.5,5.6,'#eccf92');
+  ellipse(ctx,0,-38,10,7,'#e5c184');
+  ellipse(ctx,0,-34.8,10.4,2.4,'#c97b62');
+  ctx.strokeStyle='#c9a05f';ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.ellipse(0,-38,10,7,0,Math.PI,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.ellipse(0,-34.5,17.5,5.6,0,0,Math.PI*2);ctx.stroke();
+  label(ctx,'✿',7,-40,8,'#e79aa2');
   ctx.restore();
   if(h.dashCd<=0 && !run.scene.enemies.length){ctx.strokeStyle='#b6cc9180';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(h.x,h.y+17,21,7,0,0,Math.PI*2);ctx.stroke();}
 }
-function drawMerchant(ctx) {
-  ellipse(ctx,360,156,35,9,'#9aa67922');
-  ctx.fillStyle='#9bb382';round(ctx,333,106,54,47,14);ctx.fill();
-  ellipse(ctx,360,110,22,20,'#efd5a5');ellipse(ctx,360,95,29,9,'#d5b777');
-  ellipse(ctx,352,110,2,2,'#7b7158');ellipse(ctx,368,110,2,2,'#7b7158');
-  ctx.strokeStyle='#bb9776';ctx.lineWidth=2;ctx.beginPath();ctx.arc(360,116,6,0,Math.PI);ctx.stroke();
-  round(ctx,320,141,80,35,7);ctx.fillStyle='#d9bb85';ctx.fill();ctx.fillStyle='#f7efd8';ctx.fillRect(327,143,66,8);
-  label(ctx,'欢迎歇脚',360,190,12,'#6e855f');label(ctx,'下方清单购买 · 强化会一直保留',360,209,10,'#879373');
+// 补给站：小个子商人在地毯后招呼，四个货架直接画进画面，
+// 商品、价格与售罄状态实时取自 shopItems，走近按 E 即可购买。
+function drawMerchant(ctx,run) {
+  const items=shopItems(run);
+  ellipse(ctx,360,118,96,15,'#b7c79a66');
+  ctx.fillStyle='#9bb382';round(ctx,338,74,44,40,13);ctx.fill();
+  ellipse(ctx,360,76,18,16.5,'#efd5a5');
+  ellipse(ctx,360,63,24,7.5,'#d5b777');
+  ellipse(ctx,360,68.5,24.5,2.5,'#c97b62');
+  ellipse(ctx,353,76,1.8,1.8,'#7b7158');ellipse(ctx,367,76,1.8,1.8,'#7b7158');
+  ctx.strokeStyle='#bb9776';ctx.lineWidth=1.8;ctx.beginPath();ctx.arc(360,80,4.5,0,Math.PI);ctx.stroke();
+  ellipse(ctx,348,81,2.2,1.5,'#f2b5a0c9');ellipse(ctx,372,81,2.2,1.5,'#f2b5a0c9');
+  label(ctx,'欢迎歇脚 ✿',360,128,13,'#6e855f');
+  SHOP_STALLS.forEach((s,i)=>{
+    const item=items[i];if(!item)return;
+    const sold=item.bought>=item.max;
+    const lift=Math.sin(run.time*2.1+i*.8)*2.5;
+    ellipse(ctx,s.x,s.y+40,30,7,'#75865c22');
+    ctx.fillStyle='#a9875a';ctx.fillRect(s.x-29,s.y+20,7,18);ctx.fillRect(s.x+22,s.y+20,7,18);
+    ctx.fillStyle='#d9b578';round(ctx,s.x-36,s.y+10,72,12,5);ctx.fill();
+    ctx.fillStyle='#eccd8f';round(ctx,s.x-36,s.y+10,72,5,3);ctx.fill();
+    ellipse(ctx,s.x,s.y-16+lift,16,16,sold?'#dcdcc6':'#fbf5dd');
+    ctx.strokeStyle=sold?'#b8b6a0':'#cfb877';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(s.x,s.y-16+lift,16,0,Math.PI*2);ctx.stroke();
+    label(ctx,item.icon,s.x,s.y-16+lift,21,sold?'#aaa893':'#6c845c');
+    label(ctx,item.name,s.x,s.y-36,10.5,sold?'#a5a08a':'#68795c');
+    label(ctx,sold?'售罄':`◉ ${item.cost}`,s.x,s.y+6,11,sold?'#a5a08a':'#c79c3e');
+    if(sold){ctx.strokeStyle='#c27955';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(s.x-10,s.y-26+lift);ctx.lineTo(s.x+10,s.y-6+lift);ctx.stroke();}
+  });
+  label(ctx,'走近货架按 E 购买 · 靠右花门返回前庭',360,300,12,'#6e855f');
+  label(ctx,'买到的强化会一直保留',360,318,10,'#879373');
 }
 function drawPortal(ctx,run) {
   const cleared=run.records[run.room].cleared,active=cleared&&!run.pendingReward;
@@ -159,10 +259,10 @@ export function render(ctx,run,images,{aim=null,reducedMotion=false}={}) {
   room.doors.forEach(door=>drawDoor(ctx,run,door));
   if(room.kind===4)drawPortal(ctx,run);
   for(const o of run.scene.obstacles)if(o.type==='water'||o.type==='spikes')drawObstacle(ctx,o,run);
-  if(room.kind===2)drawMerchant(ctx);
+  if(room.kind===2)drawMerchant(ctx,run);
   run.scene.pickups.forEach(p=>drawPickup(ctx,p,run.time));
   const layers=[...run.scene.obstacles.filter(o=>o.type==='rock'||o.type==='crate').map(o=>({y:o.y+o.h,draw:()=>drawObstacle(ctx,o,run)})),
-    ...run.scene.enemies.map(e=>({y:e.y+10,draw:()=>drawEnemy(ctx,e,images,run)})),{y:run.hero.y+10,draw:()=>drawHero(ctx,run,images)}].sort((a,b)=>a.y-b.y);
+    ...run.scene.enemies.map(e=>({y:e.y+10,draw:()=>drawEnemy(ctx,e,images,run)})),{y:run.hero.y+10,draw:()=>drawHero(ctx,run)}].sort((a,b)=>a.y-b.y);
   layers.forEach(layer=>layer.draw());
   for(const b of run.scene.bullets){
     if(b.owner==='hero'){

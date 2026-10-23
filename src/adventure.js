@@ -1,4 +1,4 @@
-import { WORLD, WIDTH, HEIGHT, ROOM_COUNT, ENEMY_TYPES, doorPosition, opposite, doorKey, choicesFor, activateWorld, DEFAULT_SEED } from './world.js?v=4';
+import { WORLD, WIDTH, HEIGHT, ROOM_COUNT, ENEMY_TYPES, SHOP_STALLS, doorPosition, opposite, doorKey, choicesFor, activateWorld, DEFAULT_SEED } from './world.js?v=5';
 
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 const distance = (a, b) => Math.hypot(a.x-b.x, a.y-b.y);
@@ -122,9 +122,18 @@ export function interact(run) {
     if(room.floor===5) {run.status='won';emit(run,'win','你带着六枚晴空印记，抵达了花塔的终点。');return true;}
     enterRoom(run,(room.floor+1)*5);emit(run,'floor','走进新的花园。先找钥匙，或去补给站整理收获。');return true;
   }
+  if(room.kind===2) {
+    for(let i=0;i<SHOP_STALLS.length;i++) {
+      if(distance(run.hero,SHOP_STALLS[i])>=56) continue;
+      const item=shopItems(run)[i];
+      if(item.bought>=item.max) {emit(run,'note',`${item.name}这一层已经售罄，下一层再见。`);return false;}
+      if(run.hero.coins<item.cost) {emit(run,'note',`金币还差 ${item.cost-run.hero.coins} 枚，先去攒一攒。`);return false;}
+      buy(run,item.id);return true;
+    }
+  }
   const nearby=room.doors.map(d=>({d,p:doorPosition(d.direction)})).sort((a,b)=>distance(run.hero,{x:a.p[0],y:a.p[1]})-distance(run.hero,{x:b.p[0],y:b.p[1]}))[0];
   if(nearby && distance(run.hero,{x:nearby.p[0],y:nearby.p[1]})<68) return transition(run,nearby.d.direction);
-  emit(run,'note',room.kind===2?'下方补给清单可以购买强化。靠近花门按 E 返回。':'靠近花门按 E，或向门继续走；清房后才能前进。');return false;
+  emit(run,'note',room.kind===2?'走近货架按 E 购买强化；靠右花门按 E 返回前庭。':'靠近花门按 E，或向门继续走；清房后才能前进。');return false;
 }
 
 export function usePotion(run) {

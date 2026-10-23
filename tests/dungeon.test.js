@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { WORLD, ROOM_COUNT, DEFAULT_SEED, generateWorld, activateWorld, doorPosition, choicesFor } from '../src/world.js?v=4';
+import { WORLD, ROOM_COUNT, DEFAULT_SEED, generateWorld, activateWorld, doorPosition, choicesFor } from '../src/world.js?v=5';
 import {
   createRun, enterRoom, blocked, transition, interact, update, roomCleared,
   chooseRelic, buy, enemyStats, saveRun, readRun,
-} from '../src/adventure.js?v=4';
+} from '../src/adventure.js?v=5';
 
 const memoryStorage = () => {
   const values = new Map();
@@ -75,8 +75,8 @@ test('every generated seed keeps the 30-room structure walkable and fightable', 
       if (room.kind === 3) assert.ok(['attack', 'armor', 'vitality'].includes(room.gem), `bad gem ${room.id}`);
       if (room.kind === 2) assert.equal(room.enemies.length, 0, 'shop rooms stay peaceful');
     }
-    // 第 0 间是教学房：固定两只小飞虫。
-    assert.deepEqual(WORLD[0].enemies.map((enemy) => enemy.type), ['fly', 'fly']);
+    // 第 0 间是教学房：固定三只小飞虫。
+    assert.deepEqual(WORLD[0].enemies.map((enemy) => enemy.type), ['fly', 'fly', 'fly']);
     // 难度曲线：敌人总数随层数增长，守卫房随层数获得随从。
     const perFloor = (floor) => WORLD.slice(floor * 5, floor * 5 + 5).reduce((count, room) => count + room.enemies.length, 0);
     assert.ok(perFloor(5) > perFloor(0), `seed ${seed} late floors must field more enemies`);
