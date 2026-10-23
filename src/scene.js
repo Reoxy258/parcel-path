@@ -8,7 +8,7 @@ function label(ctx,text,x,y,size=12,color='#68795c',align='center') {
 function ellipse(ctx,x,y,rx,ry,color) {ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
 
 export async function loadArt() {
-  const files={fly:'sprites/fly.png',hopper:'sprites/hopper.png',mushroom:'sprites/mushroom.png',spider:'sprites/spider.png'};
+  const files={fly:'sprites/fly.png',hopper:'sprites/hopper.png',mushroom:'sprites/mushroom.png',spider:'sprites/spider.png',isaac:'sprites/isaac.png'};
   const images={};
   await Promise.allSettled(Object.entries(files).map(([key,file])=>new Promise((resolve,reject)=>{
     const image=new Image();image.onload=()=>{images[key]=image;resolve();};image.onerror=()=>reject(new Error(file));image.src=new URL(`../assets/${file}?v=3`,import.meta.url).href;
@@ -150,64 +150,40 @@ function drawEnemy(ctx,e,images,run) {
     round(ctx,e.x-17,e.y-35,34*Math.max(0,e.hp/e.maxHp),4,2);ctx.fillStyle='#8ca36c';ctx.fill();
   }
 }
-// 主角改为纯 Canvas 手绘的小旅行家：圆润身形 + 草帽 + 会看方向的眼睛，
-// 走路时小脚交替、身体轻晃，冲刺时红围巾向后飘。
+// 主角使用以撒本体精灵图：头身两层按游戏自身的锚点叠加
+// （身体 pivot(16,25)@+2、头部 pivot(16,28)@-5），四个朝向共用
+// 上下身帧与侧面帧，右向走镜像翻转，冲刺拖尾与无敌闪烁保留。
 let heroPhase=0,heroLast={x:0,y:0};
-function drawHero(ctx,run) {
-  const h=run.hero;
-  const moved=Math.hypot(h.x-heroLast.x,h.y-heroLast.y);
-  heroPhase=moved>.35?heroPhase+moved*.11:heroPhase*.9;
+function drawHero(ctx,run,images) {
+  const h=run.hero,sprite=images.isaac;
+  const dirX=h.x-heroLast.x,dirY=h.y-heroLast.y,moved=Math.hypot(dirX,dirY);
+  const useMove=moved>.35;
   heroLast={x:h.x,y:h.y};
-  const walk=Math.sin(heroPhase),bob=Math.abs(Math.cos(heroPhase))*2;
-  const face=(h.facingX||0)>=0?1:-1;
-  const lookX=(h.facingX||0)*3.1,lookY=(h.facingY||0)*2.3;
-  const blink=(run.time%3.7)<.12,dashing=h.dashTime>0;
-  if(dashing)for(let i=1;i<4;i++)ellipse(ctx,h.x-h.dashX*i*11,h.y-h.dashY*i*11,11-i*2.5,8-i*2,'#ffffff55');
+  const dashing=h.dashTime>0;
+  if(dashing)for(let i=1;i<4;i++)ellipse(ctx,h.x-h.dashX*i*11,h.y+8-h.dashY*i*11,11-i*2.5,8-i*2,'#ffffff55');
   ellipse(ctx,h.x,h.y+17,15,5,'#5a73552b');
+  const faceX=useMove?dirX:(h.facingX||0),faceY=useMove?dirY:(h.facingY||0);
+  const side=Math.abs(faceX)>Math.abs(faceY),mirror=side&&faceX<0;
+  const blink=(run.time%3.7)<.12;
+  const frame=useMove?Math.floor(run.time*12)%10:0;
   ctx.save();
+  ctx.imageSmoothingEnabled=false;
   if(h.invuln>0 && Math.floor(run.time*15)%2)ctx.globalAlpha=.48;
-  ctx.translate(h.x,h.y+2-bob);
-  const trail=dashing?26:Math.abs(walk)*9;
-  if(trail>3){
-    const tx=-h.dashX*trail-face*4,ty=-h.dashY*trail*.5+6;
-    ctx.strokeStyle='#d97f66';ctx.lineWidth=4.5;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(0,-12);
-    ctx.quadraticCurveTo(tx*.5,-12+Math.sin(run.time*22)*3,tx,ty-6);
-    ctx.stroke();
-  }
-  ctx.rotate(walk*.08*face);
-  const liftL=Math.max(0,walk)*4,liftR=Math.max(0,-walk)*4;
-  ellipse(ctx,-6,13-liftL,5.5,3.2,'#8a6248');
-  ellipse(ctx,6,13-liftR,5.5,3.2,'#8a6248');
-  round(ctx,-face*15-5,-6,10,13,4);ctx.fillStyle='#b3865a';ctx.fill();
-  ctx.strokeStyle='#8f6844';ctx.lineWidth=1.5;ctx.stroke();
-  round(ctx,-11.5,-15,23,26,11);ctx.fillStyle='#7cab84';ctx.fill();
-  round(ctx,-6.5,-9,13,17,8);ctx.fillStyle='#f4ecd2';ctx.fill();
-  round(ctx,-10,-17,20,7,3.5);ctx.fillStyle='#d97f66';ctx.fill();
-  ellipse(ctx,-12.5,-3,3.4,5.2,'#6f9c78');ellipse(ctx,12.5,-3,3.4,5.2,'#6f9c78');
-  ellipse(ctx,0,-27,13.5,13,'#f6d9b0');
-  ellipse(ctx,0,-32.5,11,3.5,'#7a5a40');
-  if(blink){
-    ctx.strokeStyle='#3f3a33';ctx.lineWidth=1.6;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(-6.2+lookX,-27+lookY);ctx.lineTo(-2.8+lookX,-27+lookY);
-    ctx.moveTo(2.8+lookX,-27+lookY);ctx.lineTo(6.2+lookX,-27+lookY);ctx.stroke();
+  ctx.translate(h.x,h.y+15.5);
+  if(mirror)ctx.scale(-1,1);
+  if(sprite){
+    const s=1.5;
+    const headX=(side?64:faceY<0?128:0)+(blink?32:0);
+    const bodyX=frame<8?frame*32:side?(frame-8)*32:192+(frame-8)*32;
+    const bodyY=side?(frame<8?64:96):(frame<8?32:0);
+    ctx.drawImage(sprite,bodyX,bodyY,32,32,-16*s,2-25*s,32*s,32*s);
+    ctx.drawImage(sprite,headX,0,32,32,-16*s,-5-28*s,32*s,32*s);
   }else{
-    ellipse(ctx,-4.6+lookX,-27+lookY,2,2.2,'#3f3a33');
-    ellipse(ctx,4.6+lookX,-27+lookY,2,2.2,'#3f3a33');
-    ellipse(ctx,-4.1+lookX,-27.8+lookY,.7,.8,'#ffffffcc');
-    ellipse(ctx,5.1+lookX,-27.8+lookY,.7,.8,'#ffffffcc');
+    // 备用简笔形象：贴图加载失败时保证可玩
+    ellipse(ctx,0,-11,12,15,'#7cab84');
+    ellipse(ctx,0,-27,13.5,13,'#f6d9b0');
+    ellipse(ctx,-5.5,-28,2,2.2,'#3f3a33');ellipse(ctx,5.5,-28,2,2.2,'#3f3a33');
   }
-  ellipse(ctx,-8.4+lookX*.4,-23.4,2.6,1.7,'#f2b5a0d9');
-  ellipse(ctx,8.4+lookX*.4,-23.4,2.6,1.7,'#f2b5a0d9');
-  ctx.strokeStyle='#a3765a';ctx.lineWidth=1.4;ctx.lineCap='round';
-  ctx.beginPath();ctx.arc(lookX*.7,-24.4+lookY*.4,2.6,.25*Math.PI,.75*Math.PI);ctx.stroke();
-  ellipse(ctx,0,-34.5,17.5,5.6,'#eccf92');
-  ellipse(ctx,0,-38,10,7,'#e5c184');
-  ellipse(ctx,0,-34.8,10.4,2.4,'#c97b62');
-  ctx.strokeStyle='#c9a05f';ctx.lineWidth=1.2;
-  ctx.beginPath();ctx.ellipse(0,-38,10,7,0,Math.PI,Math.PI*2);ctx.stroke();
-  ctx.beginPath();ctx.ellipse(0,-34.5,17.5,5.6,0,0,Math.PI*2);ctx.stroke();
-  label(ctx,'✿',7,-40,8,'#e79aa2');
   ctx.restore();
   if(h.dashCd<=0 && !run.scene.enemies.length){ctx.strokeStyle='#b6cc9180';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(h.x,h.y+17,21,7,0,0,Math.PI*2);ctx.stroke();}
 }
@@ -262,7 +238,7 @@ export function render(ctx,run,images,{aim=null,reducedMotion=false}={}) {
   if(room.kind===2)drawMerchant(ctx,run);
   run.scene.pickups.forEach(p=>drawPickup(ctx,p,run.time));
   const layers=[...run.scene.obstacles.filter(o=>o.type==='rock'||o.type==='crate').map(o=>({y:o.y+o.h,draw:()=>drawObstacle(ctx,o,run)})),
-    ...run.scene.enemies.map(e=>({y:e.y+10,draw:()=>drawEnemy(ctx,e,images,run)})),{y:run.hero.y+10,draw:()=>drawHero(ctx,run)}].sort((a,b)=>a.y-b.y);
+    ...run.scene.enemies.map(e=>({y:e.y+10,draw:()=>drawEnemy(ctx,e,images,run)})),{y:run.hero.y+10,draw:()=>drawHero(ctx,run,images)}].sort((a,b)=>a.y-b.y);
   layers.forEach(layer=>layer.draw());
   for(const b of run.scene.bullets){
     if(b.owner==='hero'){

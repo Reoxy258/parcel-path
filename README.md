@@ -50,7 +50,7 @@ npm run build
 | `src/adventure-ui.js` | 输入、音效、弹窗、状态展示与存档协调 |
 | `src/adventure.js` | 战斗、碰撞、钥匙、掉落、成长、死亡和存档 |
 | `src/world.js` | 种子化地牢生成：30 房间的地形、敌群、出生点与晶石（mulberry32） |
-| `src/scene.js` | Canvas 花园与动画绘制（手绘小旅行家主角、几何障碍、补给站货架） |
+| `src/scene.js` | Canvas 花园与动画绘制（以撒精灵主角、几何障碍、补给站货架） |
 | `assets/sprites/` | 用户提供的四张原始怪物图集 |
 | `tests/adventure.test.js` | 新版规则与全流程验证 |
 | `tests/dungeon.test.js` | 随机生成确定性与难度曲线验证 |

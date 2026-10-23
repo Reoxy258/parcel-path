@@ -1,6 +1,6 @@
 import {createRun, readRun, saveRun, update, takeEvents, shopItems, buy, chooseRelic, revive, roomCleared} from './adventure.js?v=5';
 import {WORLD, ZONES, RELICS, ENEMY_TYPES, choicesFor, doorKey, WIDTH, HEIGHT} from './world.js?v=5';
-import {loadArt, render} from './scene.js?v=5';
+import {loadArt, render} from './scene.js?v=6';
 
 const $ = id => document.getElementById(id);
 let storage;
@@ -224,5 +224,5 @@ function frame(now) {
   pulses={};render(ctx,run,images,{aim,reducedMotion});
   if(now-lastHud>90){syncHud();lastHud=now;}requestAnimationFrame(frame);
 }
-loadArt().then(loaded=>{images=loaded;if(Object.keys(images).length<4)toast('部分图片未加载，已用备用图形继续显示。');});
+loadArt().then(loaded=>{images=loaded;if(Object.keys(images).length<5)toast('部分图片未加载，已用备用图形继续显示。');});
 syncHud();requestAnimationFrame(frame);
