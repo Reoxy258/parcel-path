@@ -1,0 +1,7 @@
+/* 晴空幸存者：在冒险模式样式之上的增量 —— 经验条、计时徽章、等级芯片 */
+.xp-track { height: 6px; background: #dce4ce; border-radius: 9px; margin-top: 9px; overflow: hidden; }
+.xp-track > span { display: block; height: 100%; width: 0; background: #5fae9e; transition: width .25s; }
+.panel-top > strong#timer-value { font-size: 19px; color: #6d895b; font-variant-numeric: tabular-nums; }
+.gem-hint { color: #5fae9e; }
+#upgrade-list .relic-chip i { font-size: 17px; }
+@media (max-width: 820px) { .xp-track { margin-top: 6px; } }

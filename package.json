@@ -1,9 +1,9 @@
 {
   "name": "parcel-path",
-  "version": "3.2.1",
+  "version": "4.0.0",
   "private": true,
   "type": "module",
-  "description": "晴空遗迹：六层30房间的明亮花园动作冒险，自动射击、钥匙探索与资源成长。",
+  "description": "晴空幸存者：十分钟怪潮生存竞技场，自动射击、晶石升级三选一与构筑成长。",
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "node scripts/serve.mjs",

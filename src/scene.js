@@ -15,7 +15,7 @@ export async function loadArt() {
   })));
   return images;
 }
-function drawFloor(ctx,run) {
+export function drawFloor(ctx,run) {
   const zone=ZONES[WORLD[run.room].floor];
   ctx.fillStyle=zone.floor;ctx.fillRect(0,0,WIDTH,HEIGHT);
   for(let row=0;row<9;row++)for(let col=0;col<15;col++){
@@ -48,7 +48,7 @@ function drawDoor(ctx,run,door) {
 }
 // 障碍物统一改用干净的几何图形：六边形多面石、三面立方体货箱、
 // 圆形涟漪池塘与三角警示荆棘，配合明亮色块保持晴空花园的基调。
-function drawObstacle(ctx,o,run) {
+export function drawObstacle(ctx,o,run) {
   if(o.hp<=0)return;
   const cx=o.x+o.w/2,cy=o.y+o.h/2;
   if(o.type==='water'){
@@ -105,7 +105,7 @@ function drawObstacle(ctx,o,run) {
     label(ctx,'✿',cx-6.5,cy+5,10,'#bc975d');
   }
 }
-function drawPickup(ctx,p,t) {
+export function drawPickup(ctx,p,t) {
   const y=p.y+Math.sin(t*3+p.x)*2;
   ellipse(ctx,p.x,p.y+9,10,3,'#75865c25');
   if(p.type==='coin'){
@@ -114,6 +114,13 @@ function drawPickup(ctx,p,t) {
     const color=p.type==='blue'?'#76a9c3':'#d1a34a';ctx.strokeStyle='#fff5d7';ctx.lineWidth=6;ctx.beginPath();ctx.arc(p.x-4,y-3,5,0,Math.PI*2);ctx.moveTo(p.x,y+1);ctx.lineTo(p.x+9,y+10);ctx.stroke();
     ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x-4,y-3,5,0,Math.PI*2);ctx.moveTo(p.x,y+1);ctx.lineTo(p.x+9,y+10);ctx.moveTo(p.x+6,y+7);ctx.lineTo(p.x+10,y+3);ctx.stroke();
   }else if(p.type==='heart')label(ctx,'♥',p.x,y,23,'#dc9d8c');
+  else if(p.type==='gem'){
+    // 经验晶石：普通 teal、精英金、守卫赤晶，价值越高越醒目
+    const color=p.value>=50?'#c76d5a':p.value>=10?'#d1a34a':'#5fae9e';
+    ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(p.x,y-11);ctx.lineTo(p.x+8,y);ctx.lineTo(p.x,y+11);ctx.lineTo(p.x-8,y);ctx.closePath();ctx.fill();
+    ctx.strokeStyle='#fffae7';ctx.lineWidth=1.5;ctx.stroke();
+    ellipse(ctx,p.x-2.5,y-4,2,1.7,'#ffffffb8');
+  }
   else if(p.type==='potion'){
     round(ctx,p.x-7,y-6,14,18,5);ctx.fillStyle='#bedad2';ctx.fill();ctx.strokeStyle='#709d91';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#c4a16c';ctx.fillRect(p.x-4,y-10,8,5);label(ctx,'+',p.x,y+3,12,'#f5fcdf');
   }else{
@@ -121,7 +128,7 @@ function drawPickup(ctx,p,t) {
     ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(p.x,y-13);ctx.lineTo(p.x+10,y);ctx.lineTo(p.x,y+13);ctx.lineTo(p.x-10,y);ctx.closePath();ctx.fill();ctx.strokeStyle='#fffae7';ctx.lineWidth=2;ctx.stroke();
   }
 }
-function drawEnemy(ctx,e,images,run) {
+export function drawEnemy(ctx,e,images,run) {
   const def=ENEMY_TYPES[e.type],sprite=images[def.sprite],isBoss=e.type==='guardian';
   const size=isBoss?106:e.type==='spider'?62:58;
   ellipse(ctx,e.x,e.y+14,isBoss?33:17,isBoss?10:5,'#67744a25');
@@ -154,7 +161,7 @@ function drawEnemy(ctx,e,images,run) {
 // （身体 pivot(16,25)@+2、头部 pivot(16,28)@-5），四个朝向共用
 // 上下身帧与侧面帧，右向走镜像翻转，冲刺拖尾与无敌闪烁保留。
 let heroPhase=0,heroLast={x:0,y:0};
-function drawHero(ctx,run,images) {
+export function drawHero(ctx,run,images) {
   const h=run.hero,sprite=images.isaac;
   const dirX=h.x-heroLast.x,dirY=h.y-heroLast.y,moved=Math.hypot(dirX,dirY);
   const useMove=moved>.35;

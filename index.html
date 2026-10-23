@@ -4,68 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#f7f5ec">
-  <meta name="description" content="晴空遗迹：明亮的花园房间冒险。移动射击、冲刺躲避、收集钥匙、购买强化，走过六层30个房间，抵达花塔终点。每条旅程随机生成地形与敌群。">
-  <title>晴空遗迹 · Sunlit Ruins</title>
+  <meta name="description" content="晴空幸存者：十分钟怪潮生存。移动躲避、飞信自动射击、捡晶石升级三选一，构筑环绕叶片与荆棘光环，守住晴空花园。">
+  <title>晴空幸存者 · Sunlit Survivors</title>
   <link rel="icon" href="./assets/sunlit.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./src/adventure.css?v=3">
+  <link rel="stylesheet" href="./src/survival.css?v=1">
 </head>
 <body>
   <div class="page">
     <header class="header">
-      <a class="brand" href="./" aria-label="晴空遗迹首页"><span class="brand-seal">✳</span><span>晴空遗迹<small>SUNLIT RUINS</small></span></a>
-      <p class="header-note">把勇气装进口袋，去花园里冒个险。</p>
+      <a class="brand" href="./" aria-label="晴空幸存者首页"><span class="brand-seal">✳</span><span>晴空幸存者<small>SUNLIT SURVIVORS</small></span></a>
+      <p class="header-note">十分钟，把花园守住。</p>
       <nav aria-label="游戏菜单"><button id="help-button" class="quiet-button">ⓘ 怎么玩</button><button id="sound-button" class="quiet-button" aria-pressed="false">♪ 声音关</button><button id="pause-button" class="quiet-button">Ⅱ 暂停</button></nav>
     </header>
 
     <main>
-      <div class="page-title"><div><p class="eyebrow"><span></span> 六层花园 · 30 个房间 · 一场小小的冒险</p><h1>穿过花门，<em>把晴天找回来。</em></h1></div><span class="edition">EXPLORE · FIGHT · GROW</span></div>
+      <div class="page-title"><div><p class="eyebrow"><span></span> 一个竞技场 · 十分钟 · 一路升级三选一</p><h1>怪潮涌来，<em>把晴空守住。</em></h1></div><span class="edition">SURVIVE · COLLECT · EVOLVE</span></div>
 
-      <section class="adventure-layout" aria-label="晴空遗迹游戏区">
+      <section class="adventure-layout" aria-label="晴空幸存者游戏区">
         <aside class="sidebar">
           <section class="route-panel">
-            <div class="panel-top"><span class="section-label">YOUR LITTLE JOURNEY</span><strong id="floor-count">01 / 06</strong></div>
-            <h2 id="zone-name">晨露花园</h2><p id="zone-note" class="zone-note">先借一点风，吹开第一扇门</p>
-            <div id="room-map" class="room-map" role="img" aria-label="本层房间地图"></div>
-            <div class="map-legend"><span><i class="map-dot current"></i>所在</span><span><i class="map-dot cleared"></i>已清空</span><span><i class="map-dot"></i>未探索</span></div>
-            <div class="objective"><span>这一刻的小目标</span><p id="objective-text">清空前庭，再去上方寻找钥匙。</p></div>
-            <div class="journey-progress"><span>房间进度</span><strong><span id="clear-count">0</span> / 30</strong></div><div class="progress-track"><span id="progress-fill"></span></div>
+            <div class="panel-top"><span class="section-label">HOLD THE GARDEN</span><strong id="timer-value">10:00</strong></div>
+            <h2 id="zone-name">晨露花园</h2><p id="zone-note" class="zone-note">花种苏醒，守好花园中央</p>
+            <div class="objective"><span>此刻</span><p id="objective-text">活着，捡晶石，变强。</p></div>
+            <div class="journey-progress"><span>本局等级</span><strong>Lv <span id="level-value">1</span></strong></div>
+            <div class="xp-track"><span id="xp-fill"></span></div>
+            <div class="journey-progress"><span>击败</span><strong><span id="kill-count">0</span> 位</strong></div>
+            <div class="journey-progress"><span>最佳纪录</span><strong id="best-line">—</strong></div>
           </section>
-          <section class="hero-panel"><div class="panel-top"><span class="section-label">口袋里的底气</span><span>❧</span></div><div class="attribute-grid"><div><span>➶ 攻击</span><strong id="attack-value">10</strong></div><div><span>◈ 护甲</span><strong id="armor-value">1</strong></div></div><div id="relic-list" class="relic-list"><p>每击败一层守卫，<br>可选择一份随行强化。</p></div></section>
+          <section class="hero-panel"><div class="panel-top"><span class="section-label">口袋里的底气</span><span>❧</span></div><div class="attribute-grid"><div><span>➶ 攻击</span><strong id="attack-value">10</strong></div><div><span>◈ 护甲</span><strong id="armor-value">0</strong></div></div><div id="upgrade-list" class="relic-list"><p>每次升级三选一，<br>强化会陪到这一局结束。</p></div></section>
         </aside>
 
         <div class="main-column">
-          <section class="game-card" aria-label="当前房间">
-            <div class="game-top"><div><p class="section-label" id="room-number">ROOM 01 / 30</p><h2 id="room-name">风铃前庭</h2></div><div class="inventory"><span class="coin-counter" title="金币，可在补给站购买强化">◉ <strong id="coin-count">0</strong></span><span class="key-counter yellow" title="黄色钥匙，开启守卫门">⚿ <strong id="yellow-count">0</strong></span><span class="key-counter blue" title="蓝色钥匙，开启宝库门">⚿ <strong id="blue-count">0</strong></span></div></div>
-            <div class="vital-row"><span class="heart-icon">♥</span><div class="health-track"><span id="health-fill"></span></div><span id="health-value">120 / 120</span><span id="enemy-count" class="enemy-count">3 位小怪</span></div>
+          <section class="game-card" aria-label="竞技场">
+            <div class="game-top"><div><p class="section-label" id="room-number">SURVIVE 10:00</p><h2 id="room-name">晨露花园 · 怪潮</h2></div><div class="inventory"><span class="coin-counter" title="已击败的小怪">✿ <strong id="kill-badge">0</strong></span><span class="key-counter yellow" title="当前等级">Lv <strong id="level-badge">1</strong></span><span class="key-counter blue gem-hint" title="已吸收的晶石经验">◇ <strong id="gem-badge">0</strong></span></div></div>
+            <div class="vital-row"><span class="heart-icon">♥</span><div class="health-track"><span id="health-fill"></span></div><span id="health-value">100 / 100</span><span id="enemy-count" class="enemy-count">0 位小怪</span></div>
             <div class="stage" id="stage">
-              <canvas id="game" width="1440" height="864" tabindex="0" role="img" aria-label="花园冒险画面：WASD或方向键移动，自动射击，空格冲刺，E交互，Q喝药。" aria-describedby="control-guide">你的浏览器需要支持 Canvas 才能显示这个游戏。</canvas>
+              <canvas id="game" width="1440" height="864" tabindex="0" role="img" aria-label="怪潮生存画面：WASD或方向键移动，飞信自动射击，空格冲刺。" aria-describedby="control-guide">你的浏览器需要支持 Canvas 才能显示这个游戏。</canvas>
               <div id="boss-bar" class="boss-bar" hidden><span id="boss-name">花园守卫</span><div><i id="boss-health"></i></div></div>
-              <div id="stage-hint" class="stage-hint">靠近小怪会自动发射飞信</div>
-              <div id="start-panel" class="stage-overlay"><div class="overlay-card"><span class="overlay-flower">✳</span><p class="eyebrow">A SUNNY LITTLE ADVENTURE</p><h2 id="start-title">花门后面，有点热闹。</h2><p id="start-note">移动、躲避，飞信会自动瞄准。<br>每条旅程的地形与敌群都会重新绽放，收集钥匙与金币，挑战每层守卫。</p><button id="start-button" class="primary-button">带上勇气，出发 →</button><small>WASD 移动 · 空格冲刺 · E 交互 · Q 喝药</small></div></div>
-              <div id="pause-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">❧</span><h2>歇一小会儿。</h2><p>花园会等你，敌人也会。</p><button id="resume-button" class="primary-button">继续冒险 →</button></div></div>
-              <div id="death-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">♧</span><h2>先回前庭，喘口气。</h2><p>已完成的房间、钥匙和强化保留。<br>体力恢复，金币减少 20%。</p><button id="revive-button" class="primary-button">整理口袋，再出发 →</button></div></div>
-              <div id="win-panel" class="stage-overlay" hidden><div class="overlay-card"><span class="overlay-flower">☀</span><p class="eyebrow">YOU BROUGHT THE SUNSHINE BACK</p><h2>晴天，找回来了。</h2><p id="win-summary">六枚晴空印记，让花塔重新亮起。</p><button id="win-new-button" class="primary-button">再走一条新旅程 →</button></div></div>
+              <div id="stage-hint" class="stage-hint">飞信自动瞄准 · 捡起晶石即可升级</div>
+              <div id="start-panel" class="stage-overlay"><div class="overlay-card"><span class="overlay-flower">✳</span><p class="eyebrow">TEN MINUTES OF SUNLIGHT</p><h2>十万花种正在涌来。</h2><p>守住 10 分钟，或者倒在变强的路上。击败小怪掉落晶石，升级三选一：多重飞信、环绕叶片、荆棘光环……每一局都是新的构筑。</p><button id="start-button" class="primary-button">进入花园 →</button><small>WASD 移动 · 空格冲刺 · 飞信自动瞄准</small></div></div>
+              <div id="pause-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">❧</span><h2>歇一小会儿。</h2><p>花园会等你，怪潮也会。</p><button id="resume-button" class="primary-button">继续坚守 →</button></div></div>
+              <div id="death-panel" class="stage-overlay" hidden><div class="overlay-card compact"><span class="overlay-flower">♧</span><h2>倒在了花丛里。</h2><p id="death-summary"></p><button id="death-restart" class="primary-button">再守一局 →</button></div></div>
+              <div id="win-panel" class="stage-overlay" hidden><div class="overlay-card"><span class="overlay-flower">☀</span><p class="eyebrow">THE SUNLIGHT HELD</p><h2>晴空，守住了。</h2><p id="win-summary"></p><button id="win-new-button" class="primary-button">再守一局 →</button></div></div>
             </div>
-            <div class="room-footer"><p id="room-status" role="status" aria-live="polite">先清空前庭，花门就会开启。</p><div class="ability-row"><button id="dash-button" class="ability-button"><span>➶ 冲刺</span><small id="dash-label">SPACE · 就绪</small></button><button id="interact-button" class="ability-button"><span>◇ 交互 / 进门</span><small>E · 靠近花门</small></button><button id="potion-button" class="ability-button"><span>♧ 晴露 <b id="potion-count">2</b></span><small>Q · 恢复 45 体力</small></button></div></div>
+            <div class="room-footer"><p id="room-status" role="status" aria-live="polite">移动、躲避，飞信自动瞄准最近的敌人。</p><div class="ability-row"><button id="dash-button" class="ability-button"><span>➶ 冲刺</span><small id="dash-label">SPACE · 就绪</small></button></div></div>
           </section>
 
-          <div class="touch-controls" aria-label="触屏方向控制"><div class="direction-pad"><button data-move="up" aria-label="向上移动">↑</button><button data-move="left" aria-label="向左移动">←</button><button data-move="down" aria-label="向下移动">↓</button><button data-move="right" aria-label="向右移动">→</button></div><p>按住方向移动<br><strong>飞信自动瞄准</strong><br>配合上方冲刺与交互</p></div>
+          <div class="touch-controls" aria-label="触屏方向控制"><div class="direction-pad"><button data-move="up" aria-label="向上移动">↑</button><button data-move="left" aria-label="向左移动">←</button><button data-move="down" aria-label="向下移动">↓</button><button data-move="right" aria-label="向右移动">→</button></div><p>按住方向移动<br><strong>飞信自动瞄准</strong><br>配合上方冲刺</p></div>
 
-          <section id="shop-panel" class="shop-panel" hidden><div class="shop-heading"><div><span class="section-label">TAKE SOMETHING FOR THE ROAD</span><h2>路上用得着的小东西。</h2></div><span>本层限定库存 · 游戏内走近货架按 E 购买</span></div><div id="shop-items" class="shop-items"></div></section>
-          <section class="field-notes" aria-label="房间情报"><div><span class="field-icon">✦</span><p><strong id="threat-title">先看一眼，再往前。</strong><span id="threat-detail">灰石挡路，木箱可击碎；绕开水池，留意周期升起的金色荆棘。</span></p></div><span id="enemy-preview" class="enemy-preview"></span></section>
+          <section class="field-notes" aria-label="战场情报"><div><span class="field-icon">✦</span><p><strong id="threat-title">先看一眼，再往前。</strong><span id="threat-detail">巡风小飞虫轻快地追逐；木箱可以打碎掉晶石；金色荆棘会周期升起，把怪潮引过去也是个办法。</span></p></div><span id="enemy-preview" class="enemy-preview"></span></section>
         </div>
       </section>
 
-      <section class="control-guide" id="control-guide"><span><kbd>WASD</kbd> / 方向键移动</span><span><kbd>SPACE</kbd> 冲刺闪避</span><span><kbd>E</kbd> 交互 / 花环</span><span><kbd>Q</kbd> 喝药</span><span>自动瞄准 · 按住画面可手动瞄准</span></section>
+      <section class="control-guide" id="control-guide"><span><kbd>WASD</kbd> / 方向键移动</span><span><kbd>SPACE</kbd> 冲刺闪避</span><span>飞信自动瞄准射击</span><span>晶石自动吸附拾取</span></section>
     </main>
-    <footer class="footer"><span>一点勇气，一口袋晴天。<button id="new-run-button">重新开始</button></span><span>SUNLIT RUINS <i>✳</i> A LITTLE ROOM TO GROW</span></footer>
+    <footer class="footer"><span>一点勇气，一口袋晴天。<button id="new-run-button">重新播种</button></span><span>SUNLIT SURVIVORS <i>✳</i> HOLD THE GARDEN</span></footer>
   </div>
 
-  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>勇敢一点，也可以慢慢来。</h2><ol class="help-list"><li><strong>走进房间，边走边打</strong><p>WASD / 方向键移动。飞信自动瞄准小怪，也可以按住画面手动瞄准。空格冲刺，短暂无敌；金色光圈意味着怪物即将出招。</p></li><li><strong>清空房间，捡走收获</strong><p>怪物未清空时花门关闭。木箱可以打碎，灰石挡子弹，水池不能走，荆棘会周期升起。靠近金币、心心、钥匙或晶石即可拾取。</p></li><li><strong>像魔塔一样，安排资源</strong><p>前庭上方是守钥房：清空后拿到黄、蓝两种钥匙。黄钥匙开南侧守卫门；蓝钥匙开东侧可选宝库。西侧补给站把货架摆进了店里：走近按 E 用金币买攻击、护甲或晴露，页面下方清单同样可点。门只在首次开启时扣钥匙。护甲越高减伤越多，但收益会递减——攻击与体力同样值得投资。</p></li><li><strong>击败守卫，选择强化</strong><p>每层守卫掉落三选一随行强化，可以获得多重飞信、穿透、加速或清房治疗等能力。选择后，靠近下方花环按 E 前往下一层；第六层的花环就是终点。</p></li></ol><p class="help-note">共 6 层 / 30 个房间，每条旅程的房间地形、敌群与晶石都会按旅程印记随机生成。进度保存在当前浏览器；战斗中离开会从房间入口继续。P / Esc 暂停，Q 消耗一瓶晴露恢复 45 体力。倒下可回本层前庭，保留强化与钥匙。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去看看 →</button></dialog>
-  <dialog id="reward-dialog" class="dialog reward-dialog"><p class="eyebrow">A LITTLE GIFT FOR YOUR COURAGE</p><span class="reward-flower">✳</span><h2>挑一份小巧思，陪你走下去。</h2><p>三选一，能力会在这次旅程里一直保留。</p><div id="reward-choices" class="reward-choices"></div></dialog>
-  <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE JOURNEY</p><h2>要从第一层重新出发吗？</h2><p>重新出发会开启一条全新旅程：房间布局重新随机，进度和强化从头开始。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前旅程</button><button id="confirm-restart" class="primary-button">重新出发 →</button></div></dialog>
+  <dialog id="help-dialog" class="dialog"><button class="close-button" data-close="help-dialog" aria-label="关闭玩法说明">×</button><p class="eyebrow">YOUR POCKET GUIDE</p><h2>十分钟，守住这座花园。</h2><ol class="help-list"><li><strong>走位就是一切</strong><p>WASD / 方向键移动，空格冲刺（短暂无敌）。飞信会自动瞄准最近的敌人——你要做的是不被围住：贴边绕圈、用灰石挡弹、冲刺穿缝。</p></li><li><strong>捡晶石，选强化</strong><p>击败小怪掉落晶石，走近自动吸收。集满经验条就升级：三选一。多重飞信与穿透强化射击，环绕叶片和荆棘光环是全新武器，磁石铃兰能把拾取范围拉到全场。</p></li><li><strong>怪潮会越来越凶</strong><p>飞虫→小蛛→蹦蹦芽→喷籽蘑菇陆续加入；2 分半后出现金环精英，3、6、9 分钟各有一位花园守卫。木箱打碎掉晶石；金色荆棘周期升起，对怪潮也有效——引着它们踩。</p></li><li><strong>守住就是胜利</strong><p>活到 10:00 即胜。倒下会结算本局战绩，秒开新局重新构筑。最佳纪录（最久坚守、胜利次数）存在本浏览器。</p></li></ol><p class="help-note">P / Esc 暂停。每局的出怪与强化选项由旅程印记（种子）决定，同印记结果一致。护甲减伤递减，攻击与体力同样值得投资。</p><button class="primary-button full-width" data-close="help-dialog">明白了，去守花园 →</button></dialog>
+  <dialog id="reward-dialog" class="dialog reward-dialog"><p class="eyebrow">LEVEL UP — PICK ONE</p><span class="reward-flower">✳</span><h2>升到新等级，挑一份强化。</h2><p>三选一，只陪这一局；下一局重新构筑。</p><div id="reward-choices" class="reward-choices"></div></dialog>
+  <dialog id="restart-dialog" class="dialog"><p class="eyebrow">A FRESH LITTLE STAND</p><h2>要重新播种吗？</h2><p>重新播种会清空当前进度，开始全新一局：出怪时刻表不变，强化选项重新随机。</p><div class="dialog-actions"><button class="quiet-button" data-close="restart-dialog">继续当前这局</button><button id="confirm-restart" class="primary-button">重新播种 →</button></div></dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <noscript><p>请启用 JavaScript 以运行这个小游戏。</p></noscript>
-  <script type="module" src="./src/adventure-ui.js?v=6"></script>
+  <script type="module" src="./src/survival-ui.js?v=1"></script>
 </body>
 </html>
